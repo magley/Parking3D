@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Parking3D", "Parking3D.vcxproj", "{CB0D66A4-E181-4A50-8865-D25068CD9A43}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CB0D66A4-E181-4A50-8865-D25068CD9A43}.Debug|x64.ActiveCfg = Debug|x64
+		{CB0D66A4-E181-4A50-8865-D25068CD9A43}.Debug|x64.Build.0 = Debug|x64
+		{CB0D66A4-E181-4A50-8865-D25068CD9A43}.Debug|x86.ActiveCfg = Debug|Win32
+		{CB0D66A4-E181-4A50-8865-D25068CD9A43}.Debug|x86.Build.0 = Debug|Win32
+		{CB0D66A4-E181-4A50-8865-D25068CD9A43}.Release|x64.ActiveCfg = Release|x64
+		{CB0D66A4-E181-4A50-8865-D25068CD9A43}.Release|x64.Build.0 = Release|x64
+		{CB0D66A4-E181-4A50-8865-D25068CD9A43}.Release|x86.ActiveCfg = Release|Win32
+		{CB0D66A4-E181-4A50-8865-D25068CD9A43}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37F0EFDA-B7E7-4346-809A-FB751EF7D249}
+	EndGlobalSection
+EndGlobal
