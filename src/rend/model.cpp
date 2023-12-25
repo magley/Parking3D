@@ -6,7 +6,7 @@ Model::Model(std::string path) {
     load(path);
 }
 
-void Model::draw(Shader shader) {
+void Model::draw(Shader* shader) {
     for (Mesh& m : meshes) {
         m.draw(shader);
     }

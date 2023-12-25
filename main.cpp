@@ -23,13 +23,32 @@ int main(int argc, char** argv) {
 	glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 	basic3d->set_mat4("VP", &VP[0][0]);
 
+	Entity* ramp = glo::wctx.entity.add(glm::vec3(0, 0.2, 0));
+	ramp->add(Component::MODEL);
+	ramp->cmodel.mdl = mdl;
+	ramp->cmodel.shd = basic3d;
+	ramp->add(Component::RAMP);
+	ramp->cramp.state = CRamp::State::RISE;
+
 	while (!glfwWindowShouldClose(glo::wctx.win)) {
 		glfwPollEvents();
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		for (int i = 0; i < glo::wctx.entity.size(); i++) {
+			Entity* e = glo::wctx.entity.arr[i];
+			if (e->has(Component::RAMP)) {
+				e->cramp.update(e);
+			}
+		}
 	
-		mdl->draw(*basic3d);
+		for (int i = 0; i < glo::wctx.entity.size(); i++) {
+			Entity* e = glo::wctx.entity.arr[i];
+			if (e->has(Component::MODEL)) {
+				e->cmodel.draw(e);
+			}
+		}
 
 		glfwSwapBuffers(glo::wctx.win);
 	}

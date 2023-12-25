@@ -12,7 +12,7 @@ struct Vertex {
 
 struct Mesh {
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures);
-	void draw(const Shader& shd);
+	void draw(const Shader* shd);
 private:
 	unsigned vbo;
 	unsigned vao;
