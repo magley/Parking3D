@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <math.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture>& textures) {
 	setup_mesh(vertices, indices, textures);
@@ -33,7 +35,32 @@ void Mesh::setup_mesh(const std::vector<Vertex>& vertices, const std::vector<uns
 	indices_size = indices.size();
 }
 
+float ang = 0.0f;
+bool rise = true;
+
+void _temp_ramp_anim() {
+	if (rise) {
+		ang += 0.1f;
+		if (ang >= 95) {
+			rise = false;
+		}
+	}
+	else {
+		ang -= 0.1f;
+		if (ang <= 0) {
+			rise = true;
+		}
+	}
+}
+
 void Mesh::draw(const Shader& shd) {
+	// TODO: Externalize model matrix for each entity (and mesh?).
+	glm::mat4 model = glm::mat4(1.0);
+	_temp_ramp_anim();
+	model = glm::rotate(model, glm::radians(ang), glm::vec3(1.0, 0.0, 0.0));
+
+	shd.set_mat4("M", &model[0][0]);
+
 	glUseProgram(shd.prog);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBindVertexArray(vao);

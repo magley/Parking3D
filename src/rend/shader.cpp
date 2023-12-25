@@ -17,7 +17,7 @@ Shader::Shader(const char* vert_fname, const char* frag_fname) {
     glLinkProgram(prog);
 }
 
-unsigned Shader::get_uniform(const char* name) {
+unsigned Shader::get_uniform(const char* name) const {
     return glGetUniformLocation(prog, name);
 }
 
@@ -51,4 +51,9 @@ void Shader::check_compile_errors(const char* fname, unsigned gl_shader) {
         printf("Could not compile shader %s\n%s\n", fname, log);
         exit(1);
     }
+}
+
+void Shader::set_mat4(const char* name, float* ptr00) const {
+    glUseProgram(prog);
+    glUniformMatrix4fv(get_uniform(name), 1, GL_FALSE, ptr00);
 }

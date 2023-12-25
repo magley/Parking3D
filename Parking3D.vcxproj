@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\ctx\winctx.cpp" />
+    <ClCompile Include="src\rend\camera.cpp" />
     <ClCompile Include="src\rend\mesh.cpp" />
     <ClCompile Include="src\rend\model.cpp" />
     <ClCompile Include="src\rend\shader.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="src\ctx\winctx.h" />
     <ClInclude Include="src\global.h" />
     <ClInclude Include="src\lib\stb_image.h" />
+    <ClInclude Include="src\rend\camera.h" />
     <ClInclude Include="src\rend\color.h" />
     <ClInclude Include="src\rend\mesh.h" />
     <ClInclude Include="src\rend\model.h" />

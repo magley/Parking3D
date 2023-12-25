@@ -10,9 +10,16 @@ struct Shader {
 	/// </summary>
 	/// <param name="name">Name of the uniform variable inside the shader.</param>
 	/// <returns>A handle to the uniform variable.</returns>
-	unsigned get_uniform(const char* name);
+	unsigned get_uniform(const char* name) const;
 
 	Shader(const char* vert_fname, const char* frag_fname);
+
+	/// <summary>
+	/// Set value for a 4x4 matrix uniform.
+	/// </summary>
+	/// <param name="name">Name of the uniform variable inside the shader.</param>
+	/// <param name="ptr00">Pointer to the first value in the 4x4 matrix.</param>
+	void set_mat4(const char* name, float* ptr00) const;
 private:
 	/// <summary>
 	/// Load a single shader from a file.

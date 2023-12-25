@@ -1,7 +1,7 @@
 #pragma once
 
 #include "winctx.h"
-#include "src/global.h"
+#include "global.h"
 
 namespace glo {
 	WinCtx wctx = WinCtx();
