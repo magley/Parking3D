@@ -6,11 +6,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture>& textures) {
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures) {
 	setup_mesh(vertices, indices, textures);
 }
 
-void Mesh::setup_mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture>& textures) {
+void Mesh::setup_mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures) {
 	glGenBuffers(1, &vbo);
 	glGenBuffers(1, &ebo);
 	glGenVertexArrays(1, &vao);
@@ -40,13 +40,13 @@ bool rise = true;
 
 void _temp_ramp_anim() {
 	if (rise) {
-		ang += 0.1f;
+		ang += 1.0f;
 		if (ang >= 95) {
 			rise = false;
 		}
 	}
 	else {
-		ang -= 0.1f;
+		ang -= 1.0f;
 		if (ang <= 0) {
 			rise = true;
 		}
@@ -67,7 +67,7 @@ void Mesh::draw(const Shader& shd) {
 
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, textures[i].tex);
+		glBindTexture(GL_TEXTURE_2D, textures[i]->tex);
 	}
 
 	glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, 0);

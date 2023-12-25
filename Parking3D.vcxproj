@@ -136,8 +136,10 @@
     <ClCompile Include="src\rend\model.cpp" />
     <ClCompile Include="src\rend\shader.cpp" />
     <ClCompile Include="src\rend\texture.cpp" />
+    <ClCompile Include="src\resource\res_mng.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
     <None Include="assets\shader\basic2d.frag" />
     <None Include="assets\shader\basic2d.vert" />
     <None Include="assets\shader\basic3d.frag" />
@@ -154,6 +156,7 @@
     <ClInclude Include="src\rend\model.h" />
     <ClInclude Include="src\rend\shader.h" />
     <ClInclude Include="src\rend\texture.h" />
+    <ClInclude Include="src\resource\res_mng.h" />
     <ClInclude Include="src\util\fileutil.h" />
     <ClInclude Include="src\util\glutil.h" />
     <ClInclude Include="src\util\mathutil.h" />

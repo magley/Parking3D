@@ -1,5 +1,6 @@
 #include "model.h"
 #include <stdio.h>
+#include "global.h"
 
 Model::Model(std::string path) {
     load(path);
@@ -40,7 +41,7 @@ void Model::process_node(aiNode* node, const aiScene* scene) {
 Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
     std::vector<Vertex> vertices;
     std::vector<unsigned> indices;
-    std::vector<Texture> textures;
+    std::vector<Texture*> textures;
 
     for (int i = 0; i < mesh->mNumVertices; i++) {
         auto& v = mesh->mVertices[i];
@@ -63,7 +64,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
 
     if (mesh->mMaterialIndex >= 0) {
         auto& mat = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture> diffuseMaps = load_material_textures(mat, aiTextureType_DIFFUSE);
+        std::vector<Texture*> diffuseMaps = load_material_textures(mat, aiTextureType_DIFFUSE);
         for (int i = 0; i < diffuseMaps.size(); i++) {
             textures.push_back(diffuseMaps[i]);
         }
@@ -73,13 +74,13 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
     return m;
 }
 
-std::vector<Texture> Model::load_material_textures(aiMaterial* mat, aiTextureType type) {
-    std::vector<Texture> textures;
+std::vector<Texture*> Model::load_material_textures(aiMaterial* mat, aiTextureType type) {
+    std::vector<Texture*> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
-        Texture texture((directory + "/" + std::string(str.C_Str())).c_str());
-        textures.push_back(texture);
+        Texture* tex = glo::wctx.resmng.load_tex(std::string(str.C_Str()));
+        textures.push_back(tex);
     }
     return textures;
 }
