@@ -429,3 +429,6 @@ FodyWeavers.xsd
 *.exe
 *.out
 *.app
+
+# Don't ignore wavefront OBJ files.
+!assets/**/*.obj
