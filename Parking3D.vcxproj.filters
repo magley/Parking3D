@@ -48,6 +48,12 @@
     <ClCompile Include="src\entity\cramp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\ccam.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -107,6 +113,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\cramp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\ccam.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

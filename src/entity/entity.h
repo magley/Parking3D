@@ -2,12 +2,13 @@
 #include "glm/glm.hpp"
 #include "cmodel.h"
 #include "cramp.h"
+#include "ccam.h"
 
 enum Component {
 	NONE  = 0,
 	MODEL = 1,
 	RAMP  = 2,
-	CAR   = 4,
+	CAM   = 4,
 };
 
 struct Entity {
@@ -19,6 +20,7 @@ struct Entity {
 	void add(Component component) { c |= component; }
 	bool has(Component component) { return (c & component) == component;  }
 
-	CModel cmodel;
-	CRamp cramp;
+	CModel model;
+	CRamp ramp;
+	CCam cam;
 };

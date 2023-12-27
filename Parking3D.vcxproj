@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\ctx\winctx.cpp" />
+    <ClCompile Include="src\entity\ccam.cpp" />
     <ClCompile Include="src\entity\cmodel.cpp" />
     <ClCompile Include="src\entity\cramp.cpp" />
     <ClCompile Include="src\entity\entitymng.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="src\rend\shader.cpp" />
     <ClCompile Include="src\rend\texture.cpp" />
     <ClCompile Include="src\resource\res_mng.cpp" />
+    <ClCompile Include="src\util\input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -151,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ctx\winctx.h" />
+    <ClInclude Include="src\entity\ccam.h" />
     <ClInclude Include="src\entity\cmodel.h" />
     <ClInclude Include="src\entity\cramp.h" />
     <ClInclude Include="src\entity\entity.h" />
@@ -166,6 +169,7 @@
     <ClInclude Include="src\resource\res_mng.h" />
     <ClInclude Include="src\util\fileutil.h" />
     <ClInclude Include="src\util\glutil.h" />
+    <ClInclude Include="src\util\input.h" />
     <ClInclude Include="src\util\mathutil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
