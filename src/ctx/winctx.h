@@ -12,5 +12,8 @@ struct WinCtx {
 	EntityMng entity;
 	Input input;
 
+	bool wireframe = false;
+	bool shaded = true;
+
 	WinCtx() {};
 };

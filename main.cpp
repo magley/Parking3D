@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 	parking->model.mdl = mdl_parking;
 	parking->model.shd = basic3d;
 
-	Entity* cam_free = glo::wctx.entity.add(glm::vec3(0, 0, 3));
+	Entity* cam_free = glo::wctx.entity.add(glm::vec3(-3, 1, 3));
 	cam_free->add(Component::CAM);
 	cam_free->cam = CCam(CCam::FREE, true);
 
@@ -59,6 +59,10 @@ int main(int argc, char** argv) {
 
 	int cam_index = 0;
 
+	
+	glm::vec3 ambientCol = glm::vec3(0.85, 1.0, 0.85);
+	basic3d->set_vec3("ambientCol", ambientCol.x, ambientCol.y, ambientCol.z);
+	basic3d->set_vec3("lightCol", 0.4, 0, 0.2);
 
 	while (!glfwWindowShouldClose(glo::wctx.win)) {
 		glfwPollEvents();
@@ -69,9 +73,17 @@ int main(int argc, char** argv) {
 			glfwSetWindowShouldClose(glo::wctx.win, GLFW_TRUE);
 		}
 
+		if (glo::wctx.input.press(GLFW_KEY_1)) {
+			glo::wctx.wireframe ^= true;
+			int m = glo::wctx.wireframe ? GL_LINE : GL_FILL;
+			glPolygonMode(GL_FRONT_AND_BACK, m);
+		}
+
 		Camera& cam = glo::wctx.cam;
 		glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 		basic3d->set_mat4("VP", &VP[0][0]);
+		basic3d->set_vec3("lightPos", cam.pos.x, cam.pos.y, cam.pos.z);
+		basic3d->set_vec3("viewPos", cam.pos.x, cam.pos.y, cam.pos.z);
 
 		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {
 			std::vector<int> cam_entity_index;

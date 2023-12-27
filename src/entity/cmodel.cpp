@@ -11,5 +11,6 @@ void CModel::draw(Entity* self) {
 	model = glm::rotate(model, glm::radians(self->ang.z), glm::vec3(0.0, 0.0, 1.0));
 
 	shd->set_mat4("M", &model[0][0]);
+	shd->set_mat4("M_inv", &glm::inverse(model)[0][0]);
 	mdl->draw(shd);
 }

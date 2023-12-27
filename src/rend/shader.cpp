@@ -57,3 +57,8 @@ void Shader::set_mat4(const char* name, float* ptr00) const {
     glUseProgram(prog);
     glUniformMatrix4fv(get_uniform(name), 1, GL_FALSE, ptr00);
 }
+
+void Shader::set_vec3(const char* name, float x, float y, float z) const {
+    glUseProgram(prog);
+    glUniform3f(get_uniform(name), x, y, z);
+}

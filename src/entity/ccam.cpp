@@ -49,8 +49,8 @@ void CCam::update(Entity* self) {
 			update_front_from_pitch_yaw(self);
 			glm::vec3 side = glm::normalize(glm::cross(front, up));
 
-			self->pos += (input_x * 0.1f) * side;
-			self->pos += (input_y * 0.1f) * front;
+			self->pos += (input_x * 0.2f) * side;
+			self->pos += (input_y * 0.2f) * front;
 		}
 	}
 

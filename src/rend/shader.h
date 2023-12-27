@@ -14,12 +14,8 @@ struct Shader {
 
 	Shader(const char* vert_fname, const char* frag_fname);
 
-	/// <summary>
-	/// Set value for a 4x4 matrix uniform.
-	/// </summary>
-	/// <param name="name">Name of the uniform variable inside the shader.</param>
-	/// <param name="ptr00">Pointer to the first value in the 4x4 matrix.</param>
 	void set_mat4(const char* name, float* ptr00) const;
+	void set_vec3(const char* name, float x, float y, float z) const;
 private:
 	/// <summary>
 	/// Load a single shader from a file.
