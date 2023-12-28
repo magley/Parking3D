@@ -1,9 +1,19 @@
 #include "camera.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "global.h"
 
-Camera::Camera() {
-	// TODO: Externalize window W and H.
-	proj = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 0.1f, 100.0f);
+void Camera::update_proj() {
+	int w, h;
+	glfwGetWindowSize(glo::wctx.win, &w, &h);
+
+	if (proj_is_perspective) {
+		proj = glm::perspective(glm::radians(45.0f), w / (float)h, 0.1f, 100.0f);
+	}
+	else {
+		float scale = 12.0f;
+		float aspect = (float)w / h;
+		proj = glm::ortho(-aspect * scale, aspect * scale, -scale, scale, -100.0f, 100.0f);
+	}
 }
 
 glm::mat4 Camera::view() const {

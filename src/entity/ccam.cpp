@@ -61,6 +61,7 @@ void CCam::update(Entity* self) {
 		cam.up = up;
 		cam.yaw = yaw;
 		cam.pitch = pitch;
+		cam.proj_is_perspective = (type != CCTV_TOPDOWN);
 	}
 }
 

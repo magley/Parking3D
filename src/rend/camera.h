@@ -9,8 +9,9 @@ struct Camera {
 	float yaw = 0;
 	float pitch = 0;
 
+	bool proj_is_perspective = true;
 	glm::mat4 proj;
 
-	Camera();
+	void update_proj();
 	glm::mat4 view() const;
 };

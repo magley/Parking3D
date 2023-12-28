@@ -7,11 +7,16 @@
 #include "global.h"
 #include "rend/model.h"
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+	glViewport(0, 0, width, height);
+}
+
 int main(int argc, char** argv) {
 	glfwInit();
-	glo::wctx.win = glfwCreateWindow(640, 480, "Parking3D", nullptr, nullptr);
+	glo::wctx.win = glfwCreateWindow(1280, 720, "Parking3D", nullptr, nullptr);
 	glfwMakeContextCurrent(glo::wctx.win);
 	glfwSetInputMode(glo::wctx.win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetFramebufferSizeCallback(glo::wctx.win, framebuffer_size_callback);
 	glfwSwapInterval(1);
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
@@ -44,7 +49,7 @@ int main(int argc, char** argv) {
 	parking->model.mdl = mdl_parking;
 	parking->model.shd = basic3d;
 
-	Entity* cam_free = glo::wctx.entity.add(glm::vec3(-3, 1, 3));
+	Entity* cam_free = glo::wctx.entity.add(glm::vec3(-3, 6, 3));
 	cam_free->add(Component::CAM);
 	cam_free->cam = CCam(CCam::FREE, true);
 
@@ -57,6 +62,11 @@ int main(int argc, char** argv) {
 	cam2->ang = glm::vec3(-39.000072, -46.999989, 0.000000);
 	cam2->add(Component::CAM);
 	cam2->cam = CCam(CCam::CCTV_SCANNER, false);
+
+	Entity* cam3 = glo::wctx.entity.add(glm::vec3(6.630467, 47.472813, 7.158076));
+	cam3->ang = glm::vec3(90.0f, -89.000000, 0.000000);
+	cam3->add(Component::CAM);
+	cam3->cam = CCam(CCam::CCTV_TOPDOWN, false);
 
 	int cam_index = 0;
 
@@ -98,6 +108,7 @@ int main(int argc, char** argv) {
 		}
 
 		Camera& cam = glo::wctx.cam;
+		cam.update_proj();
 		glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 		basic3d->set_mat4("VP", &VP[0][0]);
 		basic3d->set_vec3("pointLights[0].position", cam_free->pos.x, cam_free->pos.y, cam_free->pos.z);
@@ -130,7 +141,7 @@ int main(int argc, char** argv) {
 			}
 		}
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (int i = 0; i < glo::wctx.entity.size(); i++) {
