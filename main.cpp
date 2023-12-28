@@ -17,8 +17,8 @@ int main(int argc, char** argv) {
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
 
-	Model* mdl_ramp = glo::wctx.resmng.load_mdl("ramp.obj");
 	Model* mdl_car = glo::wctx.resmng.load_mdl("car.obj");
+	Model* mdl_ramp = glo::wctx.resmng.load_mdl("ramp.obj");
 	Model* mdl_parking = glo::wctx.resmng.load_mdl("parking.obj");
 	Shader* basic3d = glo::wctx.resmng.load_shd("basic3d");
 

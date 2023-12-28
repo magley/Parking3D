@@ -12,15 +12,14 @@ struct Vertex {
 };
 
 struct Mesh {
-	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures, Material material);
+	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, Material material);
 	void draw(const Shader* shd);
 private:
 	unsigned vbo;
 	unsigned vao;
 	unsigned ebo;
 	unsigned indices_size;
-	std::vector<Texture*> textures;
 	Material material;
 
-	void setup_mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures);
+	void setup_mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices);
 };

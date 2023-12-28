@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include "global.h"
 
+std::vector<Texture*> load_material_textures(aiMaterial* mat, aiTextureType type);
+Texture* load_material_texture(aiMaterial* mat, aiTextureType type);
+
 Model::Model(std::string path) {
     load(path);
 }
@@ -11,7 +14,6 @@ void Model::draw(Shader* shader) {
         m.draw(shader);
     }
 }
-
 
 void Model::load(std::string path) {
 	Assimp::Importer import;
@@ -66,11 +68,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
     // TODO: More than 1 material?
     if (mesh->mMaterialIndex >= 0) {
         auto& mat = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture*> diffuseMaps = load_material_textures(mat, aiTextureType_DIFFUSE);
-        for (int i = 0; i < diffuseMaps.size(); i++) {
-            textures.push_back(diffuseMaps[i]);
-        }
-
+        
         aiColor3D ambient(0.f, 0.f, 0.f);
         aiColor3D diffuse(0.f, 0.f, 0.f);
         aiColor3D specular(0.f, 0.f, 0.f);
@@ -84,13 +82,27 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
         material.diffuse = Color(diffuse.r, diffuse.g, diffuse.b);
         material.specular = Color(specular.r, specular.g, specular.b);
         material.shininess = shininess;
+
+        material.diffuse_map = load_material_texture(mat, aiTextureType_DIFFUSE);
+        material.specular_map = load_material_texture(mat, aiTextureType_SPECULAR);
+        material.emission_map = load_material_texture(mat, aiTextureType_EMISSIVE);
+
+        if (material.diffuse_map == nullptr) {
+            material.diffuse_map = glo::wctx.resmng.load_tex("tex_default_diffuse.png");
+        }
+        if (material.specular_map == nullptr) {
+            material.specular_map = glo::wctx.resmng.load_tex("tex_default_specular.png");
+        }
+        if (material.emission_map == nullptr) {
+            material.emission_map = glo::wctx.resmng.load_tex("tex_default_emission.png");
+        }
     }
 
-    Mesh m(vertices, indices, textures, material);
+    Mesh m(vertices, indices, material);
     return m;
 }
 
-std::vector<Texture*> Model::load_material_textures(aiMaterial* mat, aiTextureType type) {
+std::vector<Texture*> load_material_textures(aiMaterial* mat, aiTextureType type) {
     std::vector<Texture*> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
@@ -99,4 +111,14 @@ std::vector<Texture*> Model::load_material_textures(aiMaterial* mat, aiTextureTy
         textures.push_back(tex);
     }
     return textures;
+}
+
+Texture* load_material_texture(aiMaterial* mat, aiTextureType type) {
+    for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
+        aiString str;
+        mat->GetTexture(type, i, &str);
+        Texture* tex = glo::wctx.resmng.load_tex(std::string(str.C_Str()));
+        return tex;
+    }
+    return nullptr;
 }

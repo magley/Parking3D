@@ -6,4 +6,8 @@ struct Material {
 	Color diffuse;
 	Color specular;
 	float shininess;
+
+	Texture* diffuse_map;
+	Texture* specular_map;
+	Texture* emission_map;
 };

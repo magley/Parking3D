@@ -67,3 +67,8 @@ void Shader::set_float(const char* name, float x) const {
     glUseProgram(prog);
     glUniform1f(get_uniform(name), x);
 }
+
+void Shader::set_int(const char* name, int x) const {
+    glUseProgram(prog);
+    glUniform1i(get_uniform(name), x);
+}
