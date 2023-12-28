@@ -4,9 +4,9 @@
 void CCam::update(Entity* self) {
 	switch (type) {
 		case CCTV_SCANNER: {
-			const int SWAYMAX = 15;
+			const int SWAYMAX = 40;
 			const float SWAYSPD = 0.25f;
-			const int SWAYRESTTIMER = 60;
+			const int SWAYRESTTIMER = 90;
 
 			if (sway < +SWAYMAX && sway_dir > 0) {
 				sway += SWAYSPD;
@@ -62,6 +62,10 @@ void CCam::update(Entity* self) {
 		cam.yaw = yaw;
 		cam.pitch = pitch;
 	}
+}
+
+glm::vec3 CCam::get_front() const {
+	return front;
 }
 
 void CCam::update_pitch_yaw_from_ang(Entity* self) {

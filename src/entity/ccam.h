@@ -17,6 +17,7 @@ struct CCam {
 	CCam() {}
 	CCam(Type type, bool active) : type(type), active(active) {}
 	void update(Entity* self);
+	glm::vec3 get_front() const;
 private:
 	glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
 	glm::vec3 front = glm::vec3(0.0, 0.0, -1.0);

@@ -2,6 +2,7 @@
 #include <iostream>
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
+#include <sstream>
 
 #include "global.h"
 #include "rend/model.h"
@@ -59,9 +60,27 @@ int main(int argc, char** argv) {
 
 	int cam_index = 0;
 
-	basic3d->set_vec3("light0.ambient", 0.2f, 0.25f, 0.3f);
-	basic3d->set_vec3("light0.diffuse", 0.2f, 0.25f, 0.3f);
-	basic3d->set_vec3("light0.specular", 0.25f, 0.25f, 0.25f);
+	basic3d->set_vec3("pointLights[0].ambient", 0.2f, 0.25f, 0.3f);
+	basic3d->set_vec3("pointLights[0].diffuse", 0.2f, 0.25f, 0.3f);
+	basic3d->set_vec3("pointLights[0].specular", 0.25f, 0.25f, 0.25f);
+	basic3d->set_float("pointLights[0].constant", 1.0f);
+	basic3d->set_float("pointLights[0].linear", 0.022f);
+	basic3d->set_float("pointLights[0].quadratic", 0.0019f);
+
+	basic3d->set_vec3("spotLights[0].ambient", 0.006, 0.012, 0.012);
+	basic3d->set_vec3("spotLights[0].diffuse", 0.2f, 0.25f, 0.3f);
+	basic3d->set_vec3("spotLights[0].specular", 0.25f, 0.25f, 0.25f);
+	basic3d->set_float("spotLights[0].cutOff", glm::cos(glm::radians(6.0f)));
+	basic3d->set_float("spotLights[0].outerCutOff", glm::cos(glm::radians(22.0f)));
+
+	basic3d->set_vec3("spotLights[1].ambient", 0.006, 0.012, 0.012);
+	basic3d->set_vec3("spotLights[1].diffuse", 0.2f, 0.25f, 0.3f);
+	basic3d->set_vec3("spotLights[1].specular", 0.25f, 0.25f, 0.25f);
+	basic3d->set_float("spotLights[1].cutOff", glm::cos(glm::radians(6.0f)));
+	basic3d->set_float("spotLights[1].outerCutOff", glm::cos(glm::radians(22.0f)));
+
+	basic3d->set_int("pointLights_count", 1);
+	basic3d->set_int("spotLights_count", 2);
 
 	while (!glfwWindowShouldClose(glo::wctx.win)) {
 		glfwPollEvents();
@@ -81,7 +100,7 @@ int main(int argc, char** argv) {
 		Camera& cam = glo::wctx.cam;
 		glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 		basic3d->set_mat4("VP", &VP[0][0]);
-		basic3d->set_vec3("light0.position", cam_free->pos.x, cam_free->pos.y, cam_free->pos.z);
+		basic3d->set_vec3("pointLights[0].position", cam_free->pos.x, cam_free->pos.y, cam_free->pos.z);
 		basic3d->set_vec3("viewPos", cam.pos.x, cam.pos.y, cam.pos.z);
 
 		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {
@@ -121,10 +140,22 @@ int main(int argc, char** argv) {
 			}
 		}
 
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
+		for (int i = 0, spotlight = 0; i < glo::wctx.entity.size(); i++) {
 			Entity* e = glo::wctx.entity.arr[i];
 			if (e->has(Component::CAM)) {
 				e->cam.update(e);
+
+				if (e->cam.type == CCam::CCTV_SCANNER) {
+					std::stringstream ss;
+					ss << "spotLights[" << spotlight << "]";
+					std::string s = ss.str();
+						
+					glm::vec3 front = e->cam.get_front();
+
+					basic3d->set_vec3((s + ".position").c_str(), e->pos.x, e->pos.y, e->pos.z);
+					basic3d->set_vec3((s + ".direction").c_str(), front.x, front.y, front.z);
+					spotlight++;
+				}
 			}
 		}
 	
