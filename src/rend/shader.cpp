@@ -62,3 +62,8 @@ void Shader::set_vec3(const char* name, float x, float y, float z) const {
     glUseProgram(prog);
     glUniform3f(get_uniform(name), x, y, z);
 }
+
+void Shader::set_float(const char* name, float x) const {
+    glUseProgram(prog);
+    glUniform1f(get_uniform(name), x);
+}

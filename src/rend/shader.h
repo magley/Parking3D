@@ -16,6 +16,7 @@ struct Shader {
 
 	void set_mat4(const char* name, float* ptr00) const;
 	void set_vec3(const char* name, float x, float y, float z) const;
+	void set_float(const char* name, float x) const;
 private:
 	/// <summary>
 	/// Load a single shader from a file.

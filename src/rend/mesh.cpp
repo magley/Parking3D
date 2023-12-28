@@ -6,7 +6,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures) {
+Mesh::Mesh(const std::vector<Vertex>& vertices, 
+	const std::vector<unsigned>& indices, 
+	const std::vector<Texture*>& textures, 
+	Material material): material(material) {
 	setup_mesh(vertices, indices, textures);
 }
 
@@ -42,6 +45,11 @@ void Mesh::setup_mesh(const std::vector<Vertex>& vertices, const std::vector<uns
 void Mesh::draw(const Shader* shd) {
 	glUseProgram(shd->prog);
 	glBindVertexArray(vao);
+
+	shd->set_vec3("material0.ambient", material.ambient.r, material.ambient.g, material.ambient.b);
+	shd->set_vec3("material0.diffuse", material.diffuse.r, material.diffuse.g, material.diffuse.b);
+	shd->set_vec3("material0.specular", material.specular.r, material.specular.g, material.specular.b);
+	shd->set_float("material0.shininess", material.shininess);
 
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);

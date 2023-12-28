@@ -42,6 +42,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
     std::vector<Vertex> vertices;
     std::vector<unsigned> indices;
     std::vector<Texture*> textures;
+    Material material;
 
     for (int i = 0; i < mesh->mNumVertices; i++) {
         auto& v = mesh->mVertices[i];
@@ -62,15 +63,30 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
         }
     }
 
+    // TODO: More than 1 material?
     if (mesh->mMaterialIndex >= 0) {
         auto& mat = scene->mMaterials[mesh->mMaterialIndex];
         std::vector<Texture*> diffuseMaps = load_material_textures(mat, aiTextureType_DIFFUSE);
         for (int i = 0; i < diffuseMaps.size(); i++) {
             textures.push_back(diffuseMaps[i]);
         }
+
+        aiColor3D ambient(0.f, 0.f, 0.f);
+        aiColor3D diffuse(0.f, 0.f, 0.f);
+        aiColor3D specular(0.f, 0.f, 0.f);
+        float shininess;
+        mat->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+        mat->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
+        mat->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+        mat->Get(AI_MATKEY_SHININESS, shininess);
+
+        material.ambient = Color(ambient.r, ambient.g, ambient.b);
+        material.diffuse = Color(diffuse.r, diffuse.g, diffuse.b);
+        material.specular = Color(specular.r, specular.g, specular.b);
+        material.shininess = shininess;
     }
 
-    Mesh m(vertices, indices, textures);
+    Mesh m(vertices, indices, textures, material);
     return m;
 }
 

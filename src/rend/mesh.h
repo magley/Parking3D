@@ -3,6 +3,7 @@
 #include <vector>
 #include "texture.h"
 #include "shader.h"
+#include "material.h"
 
 struct Vertex {
 	glm::vec3 Position;
@@ -11,7 +12,7 @@ struct Vertex {
 };
 
 struct Mesh {
-	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures);
+	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures, Material material);
 	void draw(const Shader* shd);
 private:
 	unsigned vbo;
@@ -19,5 +20,7 @@ private:
 	unsigned ebo;
 	unsigned indices_size;
 	std::vector<Texture*> textures;
+	Material material;
+
 	void setup_mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, const std::vector<Texture*>& textures);
 };

@@ -121,5 +121,8 @@
     <ClInclude Include="src\entity\ccam.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\rend\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

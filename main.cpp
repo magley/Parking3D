@@ -59,10 +59,9 @@ int main(int argc, char** argv) {
 
 	int cam_index = 0;
 
-	
-	glm::vec3 ambientCol = glm::vec3(0.85, 1.0, 0.85);
-	basic3d->set_vec3("ambientCol", ambientCol.x, ambientCol.y, ambientCol.z);
-	basic3d->set_vec3("lightCol", 0.4, 0, 0.2);
+	basic3d->set_vec3("light0.ambient", 0.2f, 0.25f, 0.3f);
+	basic3d->set_vec3("light0.diffuse", 0.2f, 0.25f, 0.3f);
+	basic3d->set_vec3("light0.specular", 0.25f, 0.25f, 0.25f);
 
 	while (!glfwWindowShouldClose(glo::wctx.win)) {
 		glfwPollEvents();
@@ -82,7 +81,7 @@ int main(int argc, char** argv) {
 		Camera& cam = glo::wctx.cam;
 		glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 		basic3d->set_mat4("VP", &VP[0][0]);
-		basic3d->set_vec3("lightPos", cam.pos.x, cam.pos.y, cam.pos.z);
+		basic3d->set_vec3("light0.position", cam_free->pos.x, cam_free->pos.y, cam_free->pos.z);
 		basic3d->set_vec3("viewPos", cam.pos.x, cam.pos.y, cam.pos.z);
 
 		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {

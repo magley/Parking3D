@@ -1,15 +1,29 @@
 #version 330 core
 
+struct Material {
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	float shininess;
+};
+
+struct Light {
+	vec3 position;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
 in vec2 f_uv;
 in vec3 f_norm;
 in vec3 fragPos;
 
 out vec4 col;
-uniform sampler2D texture0;
 
-uniform vec3 ambientCol;
-uniform vec3 lightPos;
-uniform vec3 lightCol;
+uniform sampler2D texture0;
+uniform Material material0;
+uniform Light light0;
+
 uniform vec3 viewPos;
 
 float when_gt(float x, float y) {
@@ -20,22 +34,19 @@ void main() {
 	vec4 tex_color = texture(texture0, f_uv);
 
 	// Ambient.
-	float ambientStrength = 0.5;
-	vec3 ambient = ambientStrength * ambientCol;
+	vec3 ambient = light0.ambient * material0.ambient;
 
 	// Diffuse.
-	float diffuseStrength = 0.5;
 	vec3 norm = normalize(f_norm);
-	vec3 lightDir = normalize(lightPos - fragPos);
-	float diff = max(dot(norm, lightDir), 0.0) * diffuseStrength;
-	vec3 diffuse = diff * lightCol;
+	vec3 lightDir = normalize(light0.position - fragPos);
+	float diff = max(dot(norm, lightDir), 0.0);
+	vec3 diffuse = diff * (light0.diffuse * material0.diffuse);
 
 	// Specular.
-	float specularStrength = 0.5 * diffuseStrength;
 	vec3 viewDir = normalize(viewPos - fragPos);
 	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(viewDir, halfwayDir), 0.0), 32) * when_gt(diff, 0);
-	vec3 specular = specularStrength * spec * lightCol;
+	float spec = pow(max(dot(viewDir, halfwayDir), 0.0), 32) * when_gt(material0.shininess, 0);
+	vec3 specular = spec * (light0.specular * material0.specular);
 
 	// Final.
 	vec3 finalCol = (ambient + diffuse + specular) * tex_color.rgb;
