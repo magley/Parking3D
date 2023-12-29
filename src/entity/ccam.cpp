@@ -1,5 +1,6 @@
 #include "ccam.h"
 #include "global.h"
+#include "rend/shader.h"
 
 void CCam::update(Entity* self) {
 	switch (type) {
@@ -49,8 +50,8 @@ void CCam::update(Entity* self) {
 			update_front_from_pitch_yaw(self);
 			glm::vec3 side = glm::normalize(glm::cross(front, up));
 
-			self->pos += (input_x * 0.2f) * side;
-			self->pos += (input_y * 0.2f) * front;
+			self->pos += (input_x * 0.6f) * side;
+			self->pos += (input_y * 0.6f) * front;
 		}
 	}
 
@@ -62,6 +63,17 @@ void CCam::update(Entity* self) {
 		cam.yaw = yaw;
 		cam.pitch = pitch;
 		cam.proj_is_perspective = (type != CCTV_TOPDOWN);
+	}
+}
+
+void CCam::update_lights(Entity* self, Shader* shd) {
+	if (type == CCam::CCTV_SCANNER) {
+		Light& l = self->light.light;
+
+		if (l.type == Light::SPOT_LIGHT) {
+			l.spotlight.direction = get_front();
+			l.apply_type_fields(shd);
+		}
 	}
 }
 

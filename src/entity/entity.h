@@ -3,12 +3,14 @@
 #include "cmodel.h"
 #include "cramp.h"
 #include "ccam.h"
+#include "clight.h"
 
 enum Component {
 	NONE  = 0,
 	MODEL = 1,
 	RAMP  = 2,
 	CAM   = 4,
+	LIGHT = 8,
 };
 
 struct Entity {
@@ -23,4 +25,5 @@ struct Entity {
 	CModel model;
 	CRamp ramp;
 	CCam cam;
+	CLight light;
 };

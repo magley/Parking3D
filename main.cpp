@@ -6,6 +6,7 @@
 
 #include "global.h"
 #include "rend/model.h"
+#include "rend/light.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
 	glViewport(0, 0, width, height);
@@ -22,6 +23,8 @@ int main(int argc, char** argv) {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Model* mdl_car = glo::wctx.resmng.load_mdl("car.obj");
 	Model* mdl_ramp = glo::wctx.resmng.load_mdl("ramp.obj");
@@ -30,7 +33,6 @@ int main(int argc, char** argv) {
 
 	glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 	basic3d->set_mat4("VP", &VP[0][0]);
-
 
 	Entity* car = glo::wctx.entity.add(glm::vec3(2, 0, 0));
 	car->add(Component::MODEL);
@@ -52,45 +54,50 @@ int main(int argc, char** argv) {
 	Entity* cam_free = glo::wctx.entity.add(glm::vec3(-3, 6, 3));
 	cam_free->add(Component::CAM);
 	cam_free->cam = CCam(CCam::FREE, true);
+	cam_free->add(Component::LIGHT);
+	cam_free->light.light = Light(Light::POINT_LIGHT, "pointLights[0]", { 0.2, 0.25, 0.3 }, { 0.2, 0.25, 0.3 }, { 0.25, 0.25, 0.25 });
+	cam_free->light.light.pointlight = PointLight_Fields(1, 0.022, 0.0019);
+	cam_free->light.light.apply_colors(basic3d);
+	cam_free->light.light.apply_type_fields(basic3d);
 
 	Entity* cam1 = glo::wctx.entity.add(glm::vec3(13.987226, 14.390991, -5.179083));
 	cam1->ang = glm::vec3(138.399963, -41.799999, 0.000000);
 	cam1->add(Component::CAM);
 	cam1->cam = CCam(CCam::CCTV_SCANNER, false);
+	cam1->add(Component::LIGHT);
+	cam1->light.light = Light(Light::SPOT_LIGHT, "spotLights[0]", { 0.006, 0.012, 0.012 }, { 0.2f, 0.25f, 0.3f }, { 0.25f, 0.25f, 0.25f });
+	cam1->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
+	cam1->light.light.apply_colors(basic3d);
+	cam1->light.light.apply_type_fields(basic3d);
 
 	Entity* cam2 = glo::wctx.entity.add(glm::vec3(-9.133455, 14.165318, 13.735492));
 	cam2->ang = glm::vec3(-39.000072, -46.999989, 0.000000);
 	cam2->add(Component::CAM);
 	cam2->cam = CCam(CCam::CCTV_SCANNER, false);
+	cam2->add(Component::LIGHT);
+	cam2->light.light = Light(Light::SPOT_LIGHT, "spotLights[1]", { 0.006, 0.012, 0.012 }, { 0.2f, 0.25f, 0.3f }, { 0.25f, 0.25f, 0.25f });
+	cam2->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
+	cam2->light.light.apply_colors(basic3d);
+	cam2->light.light.apply_type_fields(basic3d);
 
 	Entity* cam3 = glo::wctx.entity.add(glm::vec3(6.630467, 47.472813, 7.158076));
 	cam3->ang = glm::vec3(90.0f, -89.000000, 0.000000);
 	cam3->add(Component::CAM);
 	cam3->cam = CCam(CCam::CCTV_TOPDOWN, false);
 
+	Entity* cam4 = glo::wctx.entity.add(glm::vec3(-3.198956, 4.919804, -23.898209));
+	cam4->ang = glm::vec3(140.599930, -36.199982, 0.000000);
+	cam4->add(Component::CAM);
+	cam4->cam = CCam(CCam::CCTV_SCANNER, false);
+	cam4->add(Component::LIGHT);
+	cam4->light.light = Light(Light::POINT_LIGHT, "pointLights[1]", { 0.93f, 0.5f, 0.29f }, { 0.33f, 0.1f, 0.0f }, { 0.25f, 0.25f, 0.25f });
+	cam4->light.light.pointlight = PointLight_Fields(1, 0.12f, 0.0019f);
+	cam4->light.light.apply_colors(basic3d);
+	cam4->light.light.apply_type_fields(basic3d);
+
 	int cam_index = 0;
-
-	basic3d->set_vec3("pointLights[0].ambient", 0.2f, 0.25f, 0.3f);
-	basic3d->set_vec3("pointLights[0].diffuse", 0.2f, 0.25f, 0.3f);
-	basic3d->set_vec3("pointLights[0].specular", 0.25f, 0.25f, 0.25f);
-	basic3d->set_float("pointLights[0].constant", 1.0f);
-	basic3d->set_float("pointLights[0].linear", 0.022f);
-	basic3d->set_float("pointLights[0].quadratic", 0.0019f);
-
-	basic3d->set_vec3("spotLights[0].ambient", 0.006, 0.012, 0.012);
-	basic3d->set_vec3("spotLights[0].diffuse", 0.2f, 0.25f, 0.3f);
-	basic3d->set_vec3("spotLights[0].specular", 0.25f, 0.25f, 0.25f);
-	basic3d->set_float("spotLights[0].cutOff", glm::cos(glm::radians(6.0f)));
-	basic3d->set_float("spotLights[0].outerCutOff", glm::cos(glm::radians(22.0f)));
-
-	basic3d->set_vec3("spotLights[1].ambient", 0.006, 0.012, 0.012);
-	basic3d->set_vec3("spotLights[1].diffuse", 0.2f, 0.25f, 0.3f);
-	basic3d->set_vec3("spotLights[1].specular", 0.25f, 0.25f, 0.25f);
-	basic3d->set_float("spotLights[1].cutOff", glm::cos(glm::radians(6.0f)));
-	basic3d->set_float("spotLights[1].outerCutOff", glm::cos(glm::radians(22.0f)));
-
-	basic3d->set_int("pointLights_count", 1);
-	basic3d->set_int("spotLights_count", 2);
+	int point_lights_count = 0;
+	int spot_lights_count = 0;
 
 	while (!glfwWindowShouldClose(glo::wctx.win)) {
 		glfwPollEvents();
@@ -111,7 +118,7 @@ int main(int argc, char** argv) {
 		cam.update_proj();
 		glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 		basic3d->set_mat4("VP", &VP[0][0]);
-		basic3d->set_vec3("pointLights[0].position", cam_free->pos.x, cam_free->pos.y, cam_free->pos.z);
+		cam_free->light.light.apply_position(basic3d, cam_free->pos);
 		basic3d->set_vec3("viewPos", cam.pos.x, cam.pos.y, cam.pos.z);
 
 		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {
@@ -151,22 +158,25 @@ int main(int argc, char** argv) {
 			}
 		}
 
-		for (int i = 0, spotlight = 0; i < glo::wctx.entity.size(); i++) {
+		point_lights_count = 0;
+		spot_lights_count = 0;
+		for (int i = 0; i < glo::wctx.entity.size(); i++) {
+			Entity* e = glo::wctx.entity.arr[i];
+			if (e->has(Component::LIGHT)) {
+				e->light.update_and_apply_position(e, basic3d);
+
+				if (e->light.light.type == Light::POINT_LIGHT) point_lights_count++;
+				if (e->light.light.type == Light::SPOT_LIGHT) spot_lights_count++;
+			}
+		}
+		basic3d->set_int("pointLights_count", point_lights_count);
+		basic3d->set_int("spotLights_count", spot_lights_count);
+
+		for (int i = 0; i < glo::wctx.entity.size(); i++) {
 			Entity* e = glo::wctx.entity.arr[i];
 			if (e->has(Component::CAM)) {
 				e->cam.update(e);
-
-				if (e->cam.type == CCam::CCTV_SCANNER) {
-					std::stringstream ss;
-					ss << "spotLights[" << spotlight << "]";
-					std::string s = ss.str();
-						
-					glm::vec3 front = e->cam.get_front();
-
-					basic3d->set_vec3((s + ".position").c_str(), e->pos.x, e->pos.y, e->pos.z);
-					basic3d->set_vec3((s + ".direction").c_str(), front.x, front.y, front.z);
-					spotlight++;
-				}
+				e->cam.update_lights(e, basic3d);
 			}
 		}
 	

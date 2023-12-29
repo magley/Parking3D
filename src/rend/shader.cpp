@@ -17,8 +17,8 @@ Shader::Shader(const char* vert_fname, const char* frag_fname) {
     glLinkProgram(prog);
 }
 
-unsigned Shader::get_uniform(const char* name) const {
-    return glGetUniformLocation(prog, name);
+unsigned Shader::get_uniform(const std::string& name) const {
+    return glGetUniformLocation(prog, name.c_str());
 }
 
 unsigned int Shader::load_shader(const char* fname, int shader_type) {
@@ -53,22 +53,22 @@ void Shader::check_compile_errors(const char* fname, unsigned gl_shader) {
     }
 }
 
-void Shader::set_mat4(const char* name, float* ptr00) const {
+void Shader::set_mat4(const std::string& name, float* ptr00) const {
     glUseProgram(prog);
     glUniformMatrix4fv(get_uniform(name), 1, GL_FALSE, ptr00);
 }
 
-void Shader::set_vec3(const char* name, float x, float y, float z) const {
+void Shader::set_vec3(const std::string& name, float x, float y, float z) const {
     glUseProgram(prog);
     glUniform3f(get_uniform(name), x, y, z);
 }
 
-void Shader::set_float(const char* name, float x) const {
+void Shader::set_float(const std::string& name, float x) const {
     glUseProgram(prog);
     glUniform1f(get_uniform(name), x);
 }
 
-void Shader::set_int(const char* name, int x) const {
+void Shader::set_int(const std::string& name, int x) const {
     glUseProgram(prog);
     glUniform1i(get_uniform(name), x);
 }

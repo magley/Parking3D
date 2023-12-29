@@ -3,6 +3,7 @@
 #include "glm/glm.hpp"
 
 struct Entity;
+struct Shader;
 
 struct CCam {
 	enum Type {
@@ -17,6 +18,7 @@ struct CCam {
 	CCam() {}
 	CCam(Type type, bool active) : type(type), active(active) {}
 	void update(Entity* self);
+	void update_lights(Entity* self, Shader* shd);
 	glm::vec3 get_front() const;
 private:
 	glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);

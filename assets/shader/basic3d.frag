@@ -115,6 +115,7 @@ vec3 calc_spot_light(SpotLight light) {
 
 void main() {
 	vec3 final_col;
+	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv);
 
 	for (int i = 0; i < pointLights_count; i++) {
 		vec3 c = calc_point_light(pointLights[i]);
@@ -126,7 +127,7 @@ void main() {
 	}
 
 	vec4 tex_emission = texture(material0.emission_map, f_uv);
-	col = vec4(final_col, 1.0) + tex_emission;
+	col = vec4(final_col, tex_diffuse.a) + tex_emission;
 /*
 	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv);
 	vec4 tex_specular = texture(material0.specular_map, f_uv);
