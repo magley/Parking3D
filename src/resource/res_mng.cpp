@@ -1,12 +1,12 @@
 #pragma once
 #include "res_mng.h"
 
-Texture* ResMng::load_tex(const std::string& fname) {
+Texture* ResMng::load_tex(const std::string& fname, int frames) {
 	const std::string path = "assets/texture/" + fname;
 	auto it = tex.find(fname);
 
 	if (it == tex.cend()) {
-		Texture* t = new Texture(path.c_str());
+		Texture* t = new Texture(path.c_str(), frames);
 		tex[fname] = t;
 		it = tex.find(fname);
 	}

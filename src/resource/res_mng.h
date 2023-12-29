@@ -13,8 +13,9 @@ struct ResMng {
 	/// Borrow handle to a Texture resource. Loads it if not present.
 	/// </summary>
 	/// <param name="fname">If "x.png", ResMng will look for "assets/texture/x.png".</param>
+	/// <param name="frames">Number of frames (horizontal).</param>
 	/// <returns>Texture pointer</returns>
-	Texture* load_tex(const std::string& fname);
+	Texture* load_tex(const std::string& fname, int frames = 1);
 	
 	/// <summary>
 	/// Borrow handle to a Shader resource. Loads it if not present.

@@ -14,7 +14,7 @@ struct Vertex {
 struct Mesh {
 	Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned>& indices, Material material);
 	void draw(const Shader* shd);
-private:
+
 	unsigned vbo;
 	unsigned vao;
 	unsigned ebo;

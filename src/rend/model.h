@@ -10,7 +10,7 @@
 struct Model {
 	Model(std::string path);
 	void draw(Shader* shader);
-private:
+
 	std::vector<Mesh> meshes;
 	void load(std::string path);
 

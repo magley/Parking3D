@@ -130,15 +130,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\2d\bbox.cpp" />
     <ClCompile Include="src\ctx\winctx.cpp" />
     <ClCompile Include="src\entity\ccam.cpp" />
     <ClCompile Include="src\entity\clight.cpp" />
     <ClCompile Include="src\entity\cmodel.cpp" />
     <ClCompile Include="src\entity\cramp.cpp" />
     <ClCompile Include="src\entity\entitymng.cpp" />
+    <ClCompile Include="src\2d\hud.cpp" />
+    <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\rend\camera.cpp" />
     <ClCompile Include="src\rend\light.cpp" />
     <ClCompile Include="src\rend\mesh.cpp" />
+    <ClCompile Include="src\rend\mesh2d.cpp" />
     <ClCompile Include="src\rend\model.cpp" />
     <ClCompile Include="src\rend\shader.cpp" />
     <ClCompile Include="src\rend\texture.cpp" />
@@ -154,6 +158,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\2d\bbox.h" />
     <ClInclude Include="src\ctx\winctx.h" />
     <ClInclude Include="src\entity\ccam.h" />
     <ClInclude Include="src\entity\clight.h" />
@@ -161,13 +166,16 @@
     <ClInclude Include="src\entity\cramp.h" />
     <ClInclude Include="src\entity\entity.h" />
     <ClInclude Include="src\entity\entitymng.h" />
+    <ClInclude Include="src\game\game.h" />
     <ClInclude Include="src\global.h" />
+    <ClInclude Include="src\2d\hud.h" />
     <ClInclude Include="src\lib\stb_image.h" />
     <ClInclude Include="src\rend\camera.h" />
     <ClInclude Include="src\rend\color.h" />
     <ClInclude Include="src\rend\light.h" />
     <ClInclude Include="src\rend\material.h" />
     <ClInclude Include="src\rend\mesh.h" />
+    <ClInclude Include="src\rend\mesh2d.h" />
     <ClInclude Include="src\rend\model.h" />
     <ClInclude Include="src\rend\shader.h" />
     <ClInclude Include="src\rend\texture.h" />

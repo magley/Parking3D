@@ -3,20 +3,44 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include <sstream>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "global.h"
 #include "rend/model.h"
 #include "rend/light.h"
+#include "rend/mesh2d.h"
+#include "2d/hud.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
 	glViewport(0, 0, width, height);
+}
+
+void wrap_mouse_if_needed() {
+	double mxpos, mypos; // Get mouse position, relative to window
+	glfwGetCursorPos(glo::wctx.win, &mxpos, &mypos);
+
+	int width, height;   // Get dimensions of window
+	glfwGetWindowSize(glo::wctx.win, &width, &height);
+
+	if (mxpos > width) {
+		glfwSetCursorPos(glo::wctx.win, 0, mypos);
+	}
+	else if (mxpos < 0) {
+		glfwSetCursorPos(glo::wctx.win, width, mypos);
+	}
+	if (mypos > height) {
+		glfwSetCursorPos(glo::wctx.win, mxpos, 0);
+	}
+	else if (mypos < 0) {
+		glfwSetCursorPos(glo::wctx.win, mxpos, height);
+	}
 }
 
 int main(int argc, char** argv) {
 	glfwInit();
 	glo::wctx.win = glfwCreateWindow(1280, 720, "Parking3D", nullptr, nullptr);
 	glfwMakeContextCurrent(glo::wctx.win);
-	glfwSetInputMode(glo::wctx.win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(glo::wctx.win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetFramebufferSizeCallback(glo::wctx.win, framebuffer_size_callback);
 	glfwSwapInterval(1);
 	glewInit();
@@ -30,6 +54,7 @@ int main(int argc, char** argv) {
 	Model* mdl_ramp = glo::wctx.resmng.load_mdl("ramp.obj");
 	Model* mdl_parking = glo::wctx.resmng.load_mdl("parking.obj");
 	Shader* basic3d = glo::wctx.resmng.load_shd("basic3d");
+	Shader* basic2d = glo::wctx.resmng.load_shd("basic2d");
 
 	glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 	basic3d->set_mat4("VP", &VP[0][0]);
@@ -95,12 +120,17 @@ int main(int argc, char** argv) {
 	cam4->light.light.apply_colors(basic3d);
 	cam4->light.light.apply_type_fields(basic3d);
 
-	int cam_index = 0;
 	int point_lights_count = 0;
 	int spot_lights_count = 0;
 
+	Texture* tex_map = glo::wctx.resmng.load_tex("tex_map.png", 5);
+	Mesh2D mdl_2d(Mesh2D::SQUARE);
+
+	Hud hud(&mdl_2d, tex_map);
+
 	while (!glfwWindowShouldClose(glo::wctx.win)) {
 		glfwPollEvents();
+		wrap_mouse_if_needed();
 
 		glo::wctx.input.update(glo::wctx.win);
 
@@ -122,23 +152,7 @@ int main(int argc, char** argv) {
 		basic3d->set_vec3("viewPos", cam.pos.x, cam.pos.y, cam.pos.z);
 
 		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {
-			std::vector<int> cam_entity_index;
-			for (int i = 0; i < glo::wctx.entity.size(); i++) {
-				Entity* e = glo::wctx.entity.arr[i];
-				if (e->has(Component::CAM)) {
-					cam_entity_index.push_back(i);
-				}
-			}
-
-			cam_index++;
-			cam_index = cam_index % cam_entity_index.size();
-	
-			int cam_entity_target_index = cam_entity_index[cam_index];
-			for (int i = 0; i < cam_entity_index.size(); i++) {
-				int index = cam_entity_index[i];
-				Entity* e = glo::wctx.entity.arr[index];
-				e->cam.active = (index == cam_entity_target_index);
-			}
+			glo::game.set_cam(glo::game._cam_index + 1);
 		}
 
 		if (glo::wctx.input.press(GLFW_KEY_Z)) {
@@ -186,6 +200,9 @@ int main(int argc, char** argv) {
 				e->model.draw(e);
 			}
 		}
+
+		hud.update();
+		hud.draw(basic2d);
 
 		glfwSwapBuffers(glo::wctx.win);
 	}

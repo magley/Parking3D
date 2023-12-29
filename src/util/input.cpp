@@ -13,6 +13,11 @@ void Input::update(GLFWwindow* win) {
 
 	mp_prev = mp_curr;
 	mp_curr = glm::vec2(mx, my);
+
+	for (int i = GLFW_MOUSE_BUTTON_LEFT; i <= GLFW_MOUSE_BUTTON_MIDDLE; i++) {
+		mb_prev[i] = mb_curr[i];
+		mb_curr[i] = glfwGetMouseButton(win, i) == GLFW_PRESS;
+	}
 }
 
 bool Input::down(int scancode) const {
@@ -25,6 +30,18 @@ bool Input::up(int scancode) const {
 
 bool Input::press(int scancode) const {
 	return kb_curr[scancode] && !kb_prev[scancode];
+}
+
+bool Input::mdown(int button) const {
+	return mb_curr[button];
+}
+
+bool Input::mup(int button) const {
+	return !mb_curr[button] && mb_prev[button];
+}
+
+bool Input::mpress(int button) const {
+	return mb_curr[button] && !mb_prev[button];
 }
 
 glm::vec2 Input::mouse_vel() const {
