@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 	car->model.mdl = mdl_car;
 	car->model.shd = basic3d;
 
-	Entity* ramp = glo::wctx.entity.add(glm::vec3(0, 0, 0));
+	Entity* ramp = glo::wctx.entity.add(glm::vec3(-9.001070, 0.393314, -18.018282));
 	ramp->add(Component::MODEL);
 	ramp->model.mdl = mdl_ramp;
 	ramp->model.shd = basic3d;

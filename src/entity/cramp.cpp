@@ -5,10 +5,10 @@ void CRamp::update(Entity* self) {
 	const float RISE_SPEED = 1.0f;
 	const float DROP_SPEED = 1.0f;
 	const int RISE_WAIT_TICKS = 2 * 60;
-	const float ANG_MAX = 90.0f;
-	const float ANG_MIN = 0.0f;
+	const float ANG_MAX = 0.0f;
+	const float ANG_MIN = -90.0f;
 
-	float& rot = self->ang.x;
+	float& rot = self->ang.z;
 
 	switch (state) {
 	case REST:
