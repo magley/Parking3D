@@ -42,19 +42,11 @@ void CCam::update(Entity* self) {
 			int input_y = input.down(GLFW_KEY_W) - input.down(GLFW_KEY_S);
 			int input_x = input.down(GLFW_KEY_D) - input.down(GLFW_KEY_A);
 
-
-			int winw, winh;
-			glfwGetWindowSize(glo::wctx.win, &winw, &winh);
-
 			glm::vec2 mousevel = input.mouse_vel();
-			if (glm::abs(mousevel.x) < winw - 16) {
-				self->ang.x += mousevel.x * 0.2f;
-			}
-			if (glm::abs(mousevel.y) < winh - 16) {
-				self->ang.y += mousevel.y * -0.2f;
-				self->ang.y = glm::clamp(self->ang.y, -89.0f, 89.0f);
-			}
-
+			self->ang.x += mousevel.x * 0.2f;	
+			self->ang.y += mousevel.y * -0.2f;
+			self->ang.y = glm::clamp(self->ang.y, -89.0f, 89.0f);
+			
 			update_pitch_yaw_from_ang(self);
 			update_front_from_pitch_yaw(self);
 			glm::vec3 side = glm::normalize(glm::cross(front, up));

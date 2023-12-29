@@ -23,5 +23,30 @@ void Game::set_cam(int index) {
 		int index = cam_entity_index[i];
 		Entity* e = glo::wctx.entity.arr[index];
 		e->cam.active = (index == cam_entity_target_index);
+
+		if (e->cam.active == true) {
+			lock_cursor = e->cam.type == CCam::FREE;
+		}
 	}
+
+	if (_cam_index != 0) {
+		noise.seizure_min = 0;
+		noise.intensity = 1.0;
+	}
+	else {
+		noise.intensity = 0;
+	}
+}
+
+void Game::update_noise() {
+	if (noise.seizure_min < 50) {
+		noise.seizure_min += 1;
+	}
+
+	if (noise.intensity > 0.2) {
+		noise.intensity -= 0.01;
+	}
+
+	noise.rand = rand() / 9;
+	noise.seizure = (rand() % (noise.seizure_min - noise.seizure_max)) + noise.seizure_min;
 }

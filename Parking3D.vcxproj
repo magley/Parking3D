@@ -132,12 +132,15 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\2d\bbox.cpp" />
     <ClCompile Include="src\ctx\winctx.cpp" />
+    <ClCompile Include="src\entity\cbutton.cpp" />
     <ClCompile Include="src\entity\ccam.cpp" />
     <ClCompile Include="src\entity\clight.cpp" />
     <ClCompile Include="src\entity\cmodel.cpp" />
     <ClCompile Include="src\entity\cramp.cpp" />
+    <ClCompile Include="src\entity\entity.cpp" />
     <ClCompile Include="src\entity\entitymng.cpp" />
     <ClCompile Include="src\2d\hud.cpp" />
+    <ClCompile Include="src\entity\event.cpp" />
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\rend\camera.cpp" />
     <ClCompile Include="src\rend\light.cpp" />
@@ -160,12 +163,14 @@
   <ItemGroup>
     <ClInclude Include="src\2d\bbox.h" />
     <ClInclude Include="src\ctx\winctx.h" />
+    <ClInclude Include="src\entity\cbutton.h" />
     <ClInclude Include="src\entity\ccam.h" />
     <ClInclude Include="src\entity\clight.h" />
     <ClInclude Include="src\entity\cmodel.h" />
     <ClInclude Include="src\entity\cramp.h" />
     <ClInclude Include="src\entity\entity.h" />
     <ClInclude Include="src\entity\entitymng.h" />
+    <ClInclude Include="src\entity\event.h" />
     <ClInclude Include="src\game\game.h" />
     <ClInclude Include="src\global.h" />
     <ClInclude Include="src\2d\hud.h" />

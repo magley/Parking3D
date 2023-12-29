@@ -16,6 +16,7 @@ struct PointLight {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+	bool is_active;
 
 	float constant;
 	float linear;
@@ -27,12 +28,12 @@ struct SpotLight {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+	bool is_active;
 
 	vec3  direction;
     float cutOff;
 	float outerCutOff;
 };
-
 
 in vec2 f_uv;
 in vec3 f_norm;
@@ -47,6 +48,18 @@ uniform PointLight pointLights[4];
 uniform int pointLights_count;
 uniform SpotLight spotLights[2];
 uniform int spotLights_count;
+
+uniform int u_noise_seed;
+uniform float u_noise_intensity;
+uniform float u_noise_seizure; // 200 is ok, 20 is minimum.
+
+
+float noise(vec2 p, int seed) {
+	float t = seed + 123.;
+	float ta = t*.654321;
+	float tb = t*(ta*.123456);
+	return fract(sin(p.x*ta+p.y*tb)*5678.);
+}
 
 float when_gt(float x, float y) {
 	return max(sign(x - y), 0.0);
@@ -118,53 +131,25 @@ void main() {
 	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv);
 
 	for (int i = 0; i < pointLights_count; i++) {
+		if (!pointLights[i].is_active) {
+			continue;
+		}
 		vec3 c = calc_point_light(pointLights[i]);
 		final_col += c;
 	}
+
 	for (int i = 0; i < spotLights_count; i++) {
+		if (!spotLights[i].is_active) {
+			continue;
+		}
 		vec3 c = calc_spot_light(spotLights[i]);
 		final_col += c;
 	}
 
 	vec4 tex_emission = texture(material0.emission_map, f_uv);
 	col = vec4(final_col, tex_diffuse.a) + tex_emission;
-/*
-	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv);
-	vec4 tex_specular = texture(material0.specular_map, f_uv);
-	vec4 tex_emission = texture(material0.emission_map, f_uv);
 
-	// Ambient.
-	vec3 ambient = light0.ambient * material0.ambient * tex_diffuse.rgb;
-
-	// Diffuse.
-	vec3 norm = normalize(f_norm);
-	vec3 lightDir = normalize(light0.position - fragPos);
-	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = diff * (light0.diffuse * material0.diffuse) * tex_diffuse.rgb;
-
-	// Specular.
-	vec3 viewDir = normalize(viewPos - fragPos);
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	vec3 reflectDir = reflect(-lightDir, norm);  
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32) * when_gt(material0.shininess, 0);
-	vec3 specular = spec * (light0.specular * material0.specular) * tex_specular.rgb;
-
-	// Attenuation.
-	float lightd = length(light0.position - fragPos);
-	float attenuation = 1.0 / (light0.constant + light0.linear * lightd + light0.quadratic * (lightd * lightd));   
-	ambient *= attenuation;
-	diffuse *= attenuation;
-	specular *= attenuation;
-
-	// Spotlight.
-	float theta = dot(lightDir, normalize(-light0.direction)); 
-    float epsilon = (light0.cutOff - light0.outerCutOff);
-    float intensity = clamp((theta - light0.outerCutOff) / epsilon, 0.0, 1.0);
-    diffuse *= intensity;
-    specular *= intensity;
-
-	// Final.
-	vec3 finalCol = (ambient + diffuse + specular);
-	col = vec4(finalCol, 1.0) + tex_emission;
-*/
+	// Noise
+	float r = noise(gl_FragCoord.xy / u_noise_seizure, u_noise_seed);
+	col += (vec4(r, r, r, 0) * u_noise_intensity);
 }

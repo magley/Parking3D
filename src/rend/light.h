@@ -44,8 +44,10 @@ struct Light {
 	void apply_colors(Shader* shd) const;
 	void apply_type_fields(Shader* shd) const;
 	void apply_position(Shader* shd, const glm::vec3& pos) const;
+	void apply_active(Shader* shd, bool is_active) const;
 private:
 	void _apply_colors(Shader* shd, const std::string& uniform_name) const;
 	void _apply_type_fields(Shader* shd, const std::string& uniform_name) const;
 	void _apply_position(Shader* shd, const std::string& uniform_name, const glm::vec3& pos) const;
+	void _apply_active(Shader* shd, const std::string& uniform_name, bool is_active) const;
 };

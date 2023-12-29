@@ -37,6 +37,10 @@ void Light::apply_position(Shader* shd, const glm::vec3& pos) const {
 	_apply_position(shd, uniform_name, pos);
 }
 
+void Light::apply_active(Shader* shd, bool is_active) const {
+	_apply_active(shd, uniform_name, is_active);
+}
+
 //--------------------------------------------------------------------------------------
 // Private funcs.
 //--------------------------------------------------------------------------------------
@@ -66,4 +70,8 @@ void Light::_apply_type_fields(Shader* shd, const std::string& uniform_name) con
 
 void Light::_apply_position(Shader* shd, const std::string& uniform_name, const glm::vec3& pos) const {
 	shd->set_vec3(uniform_name + ".position", pos.x, pos.y, pos.z);
+}
+
+void Light::_apply_active(Shader* shd, const std::string& uniform_name, bool is_active) const {
+	shd->set_int(uniform_name + ".is_active", is_active);
 }

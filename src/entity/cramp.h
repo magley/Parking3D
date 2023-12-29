@@ -3,14 +3,12 @@ struct Entity;
 
 struct CRamp {
 	enum State {
-		REST,
 		RISE,
-		RISE_WAIT,
 		DROP,
 	};
 
-	int timer = 0;
-	State state = State::REST;
+	State state = State::DROP;
 
 	void update(Entity* self);
+	void toggle();
 };
