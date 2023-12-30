@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\2d\bbox.cpp" />
+    <ClCompile Include="src\2d\parking2d.cpp" />
     <ClCompile Include="src\audio\audiocore.cpp" />
     <ClCompile Include="src\audio\audio_handle.cpp" />
     <ClCompile Include="src\audio\wav_sample.cpp" />
@@ -169,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\2d\bbox.h" />
+    <ClInclude Include="src\2d\parking2d.h" />
     <ClInclude Include="src\audio\audiocore.h" />
     <ClInclude Include="src\audio\audio_handle.h" />
     <ClInclude Include="src\audio\wav_sample.h" />

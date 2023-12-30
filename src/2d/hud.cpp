@@ -54,5 +54,6 @@ void Hud::draw(Shader* shd) {
 	shd->set_vec2("u_pos", hud_x, -hud_y);
 	shd->set_vec2("u_scale", map.tex->w * scale, map.tex->h * scale);
 	shd->set_vec3("u_img_frame", map.tex->w / (float)map.tex->fullw, map.tex->h / (float)map.tex->fullh, frame);
+	shd->set_vec4("u_color", 1, 1, 1, 1);
 	mesh_2d->draw(shd, map.tex);
 }

@@ -10,6 +10,7 @@
 #include "rend/light.h"
 #include "rend/mesh2d.h"
 #include "2d/hud.h"
+#include "2d/parking2d.h"
 
 #include <soloud.h>
 
@@ -143,9 +144,13 @@ int main(int argc, char** argv) {
 
 	Texture* tex_map = glo::wctx.resmng.load_tex("tex_map.png", 5);
 	Texture* tex_crosshair = glo::wctx.resmng.load_tex("tex_crosshair.png");
+	Texture* tex_pixel = glo::wctx.resmng.load_tex("tex_pixel.png");
+	Texture* tex_parking_2d = glo::wctx.resmng.load_tex("tex_parking_2d.png");
 	Mesh2D mdl_2d(Mesh2D::SQUARE);
+	Mesh2D mdl_2d_circle(Mesh2D::CIRCLE);
 
 	Hud hud(&mdl_2d, tex_map);
+	Parking2D parking2d(&mdl_2d, &mdl_2d_circle, tex_pixel, tex_parking_2d);
 
 	int seizure_min = 250;
 	int seizure_max = 500;
@@ -315,6 +320,7 @@ int main(int argc, char** argv) {
 		}
 
 		hud.draw(basic2d);
+		parking2d.draw(basic2d);
 
 		// Draw crosshair.
 		if (glo::game.lock_cursor) {

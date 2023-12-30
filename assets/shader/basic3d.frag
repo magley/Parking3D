@@ -39,7 +39,7 @@ in vec2 f_uv;
 in vec3 f_norm;
 in vec3 fragPos;
 
-out vec4 col;
+layout(location = 0) out vec4 col;
 
 uniform Material material0;
 uniform vec3 viewPos;

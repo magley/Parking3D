@@ -17,6 +17,7 @@ struct Shader {
 	Shader(const char* vert_fname, const char* frag_fname);
 
 	void set_mat4(const std::string& name, float* ptr00) const;
+	void set_vec4(const std::string& name, float x, float y, float z, float w) const;
 	void set_vec3(const std::string& name, float x, float y, float z) const;
 	void set_vec2(const std::string& name, float x, float y) const;
 	void set_float(const std::string& name, float x) const;
