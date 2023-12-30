@@ -40,6 +40,19 @@ Model* ResMng::load_mdl(const std::string& fname) {
 	return it->second;
 }
 
+WavSample* ResMng::load_wav(const std::string& fname) {
+	const std::string path = "assets/sound/" + fname;
+	auto it = wav.find(fname);
+
+	if (it == wav.cend()) {
+		WavSample* m = new WavSample(path.c_str());
+		wav[fname] = m;
+		it = wav.find(fname);
+	}
+
+	return it->second;
+}
+
 void ResMng::free_everything() {
 	for (auto& it : tex) {
 		free(it.second);
@@ -50,8 +63,12 @@ void ResMng::free_everything() {
 	for (auto& it : mdl) {
 		free(it.second);
 	}
+	for (auto& it : wav) {
+		free(it.second);
+	}
 
 	tex.clear();
 	shd.clear();
 	mdl.clear();
+	wav.clear();
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include "parking_spot.h"
+
 struct Game {
 	int _cam_index = 0;
 	bool lock_cursor = false;
@@ -11,6 +14,8 @@ struct Game {
 		float seizure;
 		int rand;
 	} noise;
+
+	ParkingSpot parking_spots[6];
 
 	void set_cam(int index);
 	void update_noise();

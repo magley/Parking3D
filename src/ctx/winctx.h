@@ -5,6 +5,7 @@
 #include "entity/entitymng.h"
 #include "util/input.h"
 #include "entity/event.h"
+#include "audio/audiocore.h"
 
 struct WinCtx {
 	GLFWwindow* win = nullptr;
@@ -13,6 +14,7 @@ struct WinCtx {
 	EntityMng entity;
 	EventMng event;
 	Input input;
+	AudioCore audio;
 
 	bool wireframe = false;
 	bool shaded = true;

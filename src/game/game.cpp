@@ -36,6 +36,9 @@ void Game::set_cam(int index) {
 	else {
 		noise.intensity = 0;
 	}
+
+	WavSample* snd_cam_switch = glo::wctx.resmng.load_wav("cam_switch.wav");
+	glo::wctx.audio.play(snd_cam_switch);
 }
 
 void Game::update_noise() {

@@ -5,6 +5,7 @@
 #include "rend/texture.h"
 #include "rend/shader.h"
 #include "rend/model.h"
+#include "audio/wav_sample.h"
 
 // TODO: Make filenames extension-agnostic.
 
@@ -34,10 +35,18 @@ struct ResMng {
 	/// <param name="fname">If "x.obj", ResMng will look for "assets/model/x.obj" and "assets/model/x.mtl".</param>
 	/// <returns>Model pointer</returns>
 	Model* load_mdl(const std::string& fname);
-	
+
+	/// <summary>
+	/// Borrow handle to a WavSample resource. Loads it if not present.
+	/// </summary>
+	/// <param name="fname">If "x.wav", ResMng will look for "assets/sound/x.wav".</param>
+	/// <returns>WavSample pointer</returns>
+	WavSample* load_wav(const std::string& fname);
+
 	void free_everything();
 private:
 	std::unordered_map<std::string, Texture*> tex;
 	std::unordered_map<std::string, Shader*> shd;
 	std::unordered_map<std::string, Model*> mdl;
+	std::unordered_map<std::string, WavSample*> wav;
 };

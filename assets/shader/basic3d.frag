@@ -53,6 +53,9 @@ uniform int u_noise_seed;
 uniform float u_noise_intensity;
 uniform float u_noise_seizure; // 200 is ok, 20 is minimum.
 
+uniform vec3 u_tint;
+
+uniform bool u_unlit;
 
 float noise(vec2 p, int seed) {
 	float t = seed + 123.;
@@ -67,7 +70,7 @@ float when_gt(float x, float y) {
 
 vec3 calc_point_light(PointLight light) {
 	// Texture maps.
-	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv);
+	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv) * vec4(u_tint, 1);;
 	vec4 tex_specular = texture(material0.specular_map, f_uv);
 
 	// Ambient.
@@ -97,7 +100,8 @@ vec3 calc_point_light(PointLight light) {
 }
 
 vec3 calc_spot_light(SpotLight light) {
-	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv);
+	// Texture maps.
+	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv) * vec4(u_tint, 1);;
 	vec4 tex_specular = texture(material0.specular_map, f_uv);
 
 	// Ambient.
@@ -128,28 +132,34 @@ vec3 calc_spot_light(SpotLight light) {
 
 void main() {
 	vec3 final_col;
-	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv);
+	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv) * vec4(u_tint, 1);
 
-	for (int i = 0; i < pointLights_count; i++) {
-		if (!pointLights[i].is_active) {
-			continue;
+	if (u_unlit) {
+		col = tex_diffuse;
+	} else {
+		for (int i = 0; i < pointLights_count; i++) {
+			if (!pointLights[i].is_active) {
+				continue;
+			}
+			vec3 c = calc_point_light(pointLights[i]);
+			final_col += c;
 		}
-		vec3 c = calc_point_light(pointLights[i]);
-		final_col += c;
-	}
 
-	for (int i = 0; i < spotLights_count; i++) {
-		if (!spotLights[i].is_active) {
-			continue;
+		for (int i = 0; i < spotLights_count; i++) {
+			if (!spotLights[i].is_active) {
+				continue;
+			}
+			vec3 c = calc_spot_light(spotLights[i]);
+			final_col += c;
 		}
-		vec3 c = calc_spot_light(spotLights[i]);
-		final_col += c;
+	
+	
+		vec4 tex_emission = texture(material0.emission_map, f_uv);
+		tex_emission *= tex_emission.a;
+		col = vec4(final_col, tex_diffuse.a) + tex_emission;
+
+		// Noise
+		float r = noise(gl_FragCoord.xy / u_noise_seizure, u_noise_seed);
+		col += (vec4(r, r, r, 0) * u_noise_intensity);
 	}
-
-	vec4 tex_emission = texture(material0.emission_map, f_uv);
-	col = vec4(final_col, tex_diffuse.a) + tex_emission;
-
-	// Noise
-	float r = noise(gl_FragCoord.xy / u_noise_seizure, u_noise_seed);
-	col += (vec4(r, r, r, 0) * u_noise_intensity);
 }

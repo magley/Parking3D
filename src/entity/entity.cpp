@@ -14,6 +14,7 @@ void Entity::on_event(Event ev) {
 	switch (ev) {
 	case EVENT_TOGGLE_HOUSE_LIGHT:
 		light.set_active(!light._active);
+		audio.pause(!light._active);
 		return;
 	case EVENT_TOGGLE_RAMP:
 		ramp.toggle();

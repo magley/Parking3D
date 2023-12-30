@@ -12,3 +12,4 @@ d 1.000000
 illum 2
 map_Kd tex_ramp.png
 map_Ks tex_ramp_specular.png
+map_Ke tex_ramp_emission.png

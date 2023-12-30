@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\SoLoud-wav.2020.2.7.2\build\native\SoLoud-wav.props" Condition="Exists('packages\SoLoud-wav.2020.2.7.2\build\native\SoLoud-wav.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -131,7 +132,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\2d\bbox.cpp" />
+    <ClCompile Include="src\audio\audiocore.cpp" />
+    <ClCompile Include="src\audio\audio_handle.cpp" />
+    <ClCompile Include="src\audio\wav_sample.cpp" />
     <ClCompile Include="src\ctx\winctx.cpp" />
+    <ClCompile Include="src\entity\caudio.cpp" />
     <ClCompile Include="src\entity\cbutton.cpp" />
     <ClCompile Include="src\entity\ccam.cpp" />
     <ClCompile Include="src\entity\clight.cpp" />
@@ -162,9 +167,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\2d\bbox.h" />
+    <ClInclude Include="src\audio\audiocore.h" />
+    <ClInclude Include="src\audio\audio_handle.h" />
+    <ClInclude Include="src\audio\wav_sample.h" />
     <ClInclude Include="src\ctx\winctx.h" />
+    <ClInclude Include="src\entity\caudio.h" />
     <ClInclude Include="src\entity\cbutton.h" />
     <ClInclude Include="src\entity\ccam.h" />
+    <ClInclude Include="src\entity\ccar.h" />
     <ClInclude Include="src\entity\clight.h" />
     <ClInclude Include="src\entity\cmodel.h" />
     <ClInclude Include="src\entity\cramp.h" />
@@ -172,6 +182,7 @@
     <ClInclude Include="src\entity\entitymng.h" />
     <ClInclude Include="src\entity\event.h" />
     <ClInclude Include="src\game\game.h" />
+    <ClInclude Include="src\game\parking_spot.h" />
     <ClInclude Include="src\global.h" />
     <ClInclude Include="src\2d\hud.h" />
     <ClInclude Include="src\lib\stb_image.h" />
@@ -205,5 +216,6 @@
     <Error Condition="!Exists('packages\glm.0.9.9.800\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glm.0.9.9.800\build\native\glm.targets'))" />
     <Error Condition="!Exists('packages\AssimpCpp.5.0.1.6\build\native\AssimpCpp.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\AssimpCpp.5.0.1.6\build\native\AssimpCpp.targets'))" />
     <Error Condition="!Exists('packages\glfw.3.3.9\build\native\glfw.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glfw.3.3.9\build\native\glfw.targets'))" />
+    <Error Condition="!Exists('packages\SoLoud-wav.2020.2.7.2\build\native\SoLoud-wav.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SoLoud-wav.2020.2.7.2\build\native\SoLoud-wav.props'))" />
   </Target>
 </Project>

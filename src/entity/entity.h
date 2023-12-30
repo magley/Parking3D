@@ -6,6 +6,8 @@
 #include "clight.h"
 #include "event.h"
 #include "cbutton.h"
+#include "ccar.h"
+#include "caudio.h"
 
 enum Component {
 	NONE  = 0,
@@ -14,6 +16,8 @@ enum Component {
 	CAM   = 4,
 	LIGHT = 8,
 	BUTTON= 16,
+	CAR   = 32,
+	AUDIO = 64,
 };
 
 struct Entity {
@@ -30,6 +34,8 @@ struct Entity {
 	CCam cam;
 	CLight light;
 	CButton button;
+	CCar car;
+	CAudio audio;
 
 	bool event_sub[EVENT_size] = { false };
 	void sub(Event ev) { event_sub[ev] = true; }
