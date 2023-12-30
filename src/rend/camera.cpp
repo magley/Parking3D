@@ -10,7 +10,7 @@ void Camera::update_proj() {
 		proj = glm::perspective(glm::radians(45.0f), w / (float)h, 0.1f, 100.0f);
 	}
 	else {
-		float scale = 12.0f;
+		float scale = 10.0f;
 		float aspect = (float)w / h;
 		proj = glm::ortho(-aspect * scale, aspect * scale, -scale, scale, -100.0f, 100.0f);
 	}

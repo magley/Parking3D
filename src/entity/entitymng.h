@@ -8,4 +8,6 @@ struct EntityMng {
 	Entity* add(glm::vec3 pos);
 	void clear();
 	size_t size() const;
+	void destroy(Entity* e);
+	void purge_destroyed();
 };

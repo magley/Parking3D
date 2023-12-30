@@ -139,6 +139,7 @@
     <ClCompile Include="src\entity\caudio.cpp" />
     <ClCompile Include="src\entity\cbutton.cpp" />
     <ClCompile Include="src\entity\ccam.cpp" />
+    <ClCompile Include="src\entity\ccar.cpp" />
     <ClCompile Include="src\entity\clight.cpp" />
     <ClCompile Include="src\entity\cmodel.cpp" />
     <ClCompile Include="src\entity\cramp.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="src\entity\event.cpp" />
     <ClCompile Include="src\game\game.cpp" />
     <ClCompile Include="src\rend\camera.cpp" />
+    <ClCompile Include="src\rend\color.cpp" />
     <ClCompile Include="src\rend\light.cpp" />
     <ClCompile Include="src\rend\mesh.cpp" />
     <ClCompile Include="src\rend\mesh2d.cpp" />

@@ -34,6 +34,7 @@ int main(int argc, char** argv) {
 	Model* mdl_button = glo::wctx.resmng.load_mdl("sphere.obj");
 	Model* mdl_ramp = glo::wctx.resmng.load_mdl("ramp.obj");
 	Model* mdl_parking = glo::wctx.resmng.load_mdl("parking.obj");
+	Model* mdl_house_window = glo::wctx.resmng.load_mdl("window.obj");
 	Shader* basic3d = glo::wctx.resmng.load_shd("basic3d");
 	Shader* basic2d = glo::wctx.resmng.load_shd("basic2d");
 
@@ -68,12 +69,17 @@ int main(int argc, char** argv) {
 	parking->model.mdl = mdl_parking;
 	parking->model.shd = basic3d;
 
+	Entity* house_window = glo::wctx.entity.add(glm::vec3(-8.4, 2.1, -21.3));
+	house_window->add(Component::MODEL);
+	house_window->model.mdl = mdl_house_window;
+	house_window->model.shd = basic3d;
+
 	Entity* cam_free = glo::wctx.entity.add(glm::vec3(-3, 6, 3));
 	cam_free->add(Component::CAM);
 	cam_free->cam = CCam(CCam::FREE, true);
 	cam_free->add(Component::LIGHT);
 	cam_free->light.shd = basic3d;
-	cam_free->light.light = Light(Light::POINT_LIGHT, "pointLights[0]", { 0.05, 0.05, 0.1 }, { 0.2, 0.25, 0.3 }, { 0.25, 0.25, 0.25 });
+	cam_free->light.light = Light(Light::POINT_LIGHT, "pointLights[0]", { 0.05, 0.05, 0.1 }, { 0.4, 0.5, 0.7 }, { 0.65, 0.65, 0.65 });
 	cam_free->light.light.pointlight = PointLight_Fields(1, 0.022, 0.0019);
 	cam_free->light.light.apply_colors(basic3d);
 	cam_free->light.light.apply_type_fields(basic3d);
@@ -85,7 +91,7 @@ int main(int argc, char** argv) {
 	cam1->cam = CCam(CCam::CCTV_SCANNER, false);
 	cam1->add(Component::LIGHT);
 	cam1->light.shd = basic3d;
-	cam1->light.light = Light(Light::SPOT_LIGHT, "spotLights[0]", { 0.016, 0.022, 0.022 }, { 0.2f, 0.25f, 0.3f }, { 0.25f, 0.25f, 0.25f });
+	cam1->light.light = Light(Light::SPOT_LIGHT, "spotLights[0]", { 0.056, 0.082, 0.082 }, { 0.2f, 0.25f, 0.3f }, { 0.45f, 0.45f, 0.45f });
 	cam1->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
 	cam1->light.light.apply_colors(basic3d);
 	cam1->light.light.apply_type_fields(basic3d);
@@ -97,13 +103,13 @@ int main(int argc, char** argv) {
 	cam2->cam = CCam(CCam::CCTV_SCANNER, false);
 	cam2->add(Component::LIGHT);
 	cam2->light.shd = basic3d;
-	cam2->light.light = Light(Light::SPOT_LIGHT, "spotLights[1]", { 0.016, 0.022, 0.022 }, { 0.2f, 0.25f, 0.3f }, { 0.25f, 0.25f, 0.25f });
+	cam2->light.light = Light(Light::SPOT_LIGHT, "spotLights[1]", { 0.056, 0.082, 0.082 }, { 0.2f, 0.25f, 0.3f }, { 0.45f, 0.45f, 0.45f });
 	cam2->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
 	cam2->light.light.apply_colors(basic3d);
 	cam2->light.light.apply_type_fields(basic3d);
 	cam2->light.light.apply_active(basic3d, true);
 
-	Entity* cam3 = glo::wctx.entity.add(glm::vec3(6.630467, 47.472813, 7.158076));
+	Entity* cam3 = glo::wctx.entity.add(glm::vec3(8.630467, 43.472813, 9.658076));
 	cam3->ang = glm::vec3(00.0f, -89.000000, 0.000000);
 	cam3->add(Component::CAM);
 	cam3->cam = CCam(CCam::CCTV_TOPDOWN, false);
@@ -122,18 +128,6 @@ int main(int argc, char** argv) {
 	cam4->sub(Event::EVENT_TOGGLE_HOUSE_LIGHT);
 	cam4->add(Component::AUDIO);
 	cam4->audio.play_3d("light_buzz.mp3", cam4->pos, true);
-
-	Entity* car[6];
-
-	for (int i = 0; i < 6; i++) {
-		car[i] = glo::wctx.entity.add(glm::vec3(2, 0, 0));
-		car[i]->add(Component::MODEL);
-		car[i]->model.mdl = mdl_car;
-		car[i]->model.shd = basic3d;
-		car[i]->add(Component::CAR);
-		car[i]->car.color = Color(rand() % 255 / 255.0f, rand() % 255 / 255.0f, rand() % 255 / 255.0f);
-		car[i]->car.spot = -1;
-	}
 
 	glo::game.parking_spots[0].pos = glm::vec3(13.286233, 0, 0.556348);
 	glo::game.parking_spots[1].pos = glm::vec3(13.286233, 0, 8.956244);
@@ -174,31 +168,38 @@ int main(int argc, char** argv) {
 
 		Input& input = glo::wctx.input;
 		for (int i = 0; i < 6; i++) {
-			if (input.press(GLFW_KEY_1 + i)) {
-				if (input.down(GLFW_KEY_LEFT_CONTROL)) {
-					glo::game.parking_spots[i].time_left = 0;
-				}
-				else if (input.down(GLFW_KEY_LEFT_SHIFT)) {
-					glo::game.parking_spots[i].time_left = 20 * 60;
-				}
-				else {
-					glo::game.parking_spots[i].time_left = 20 * 60;
-					glo::game.parking_spots[i].used_by = car[i];
-					car[i]->car.spot = i;
-					car[i]->pos = glo::game.parking_spots[i].pos;
+			Entity* car = nullptr;
+			for (Entity* e : glo::wctx.entity.arr) {
+				if (e->has(Component::CAR) && e->car.spot_index == i) {
+					car = e;
+					break;
 				}
 			}
 
-			glo::game.parking_spots[i].time_left -= 1;
-
-			if (glo::game.parking_spots[i].time_left <= 0) {
-				glo::game.parking_spots[i].used_by = nullptr;
-				car[i]->car.spot = -1;
-				car[i]->pos = glm::vec3(0, 999, 0);
+			if (input.press(GLFW_KEY_1 + i)) {
+				if (input.down(GLFW_KEY_LEFT_CONTROL) && car != nullptr) {
+					glo::wctx.entity.destroy(car);
+				}
+				else if (input.down(GLFW_KEY_LEFT_SHIFT) && car != nullptr) {
+					car->car.time_left = 20 * 60;
+				}
+				else if (car == nullptr) {
+					car = glo::wctx.entity.add({ -15.601791, 0, -41.797455 });
+					car->add(Component::MODEL);
+					car->model.mdl = mdl_car;
+					car->model.shd = basic3d;
+					car->add(Component::CAR);
+					car->car.init(i);
+				}
 			}
 		}
 
 		/////////////////////////////////////////////////
+
+		float dx = input.down(GLFW_KEY_T) - input.down(GLFW_KEY_Y);
+		float dy = input.down(GLFW_KEY_G) - input.down(GLFW_KEY_H);
+		float dz = input.down(GLFW_KEY_B) - input.down(GLFW_KEY_N);
+		house_window->pos += glm::vec3(dx, dy, dz);
 
 		if (glo::wctx.input.press(GLFW_KEY_ESCAPE)) {
 			glfwSetWindowShouldClose(glo::wctx.win, GLFW_TRUE);
@@ -274,6 +275,13 @@ int main(int argc, char** argv) {
 			}
 		}
 
+		for (int i = 0; i < glo::wctx.entity.size(); i++) {
+			Entity* e = glo::wctx.entity.arr[i];
+			if (e->has(Component::CAR)) {
+				e->car.update(e);
+			}
+		}
+
 		hud.update();
 
 		for (int i = 0; i < glo::wctx.entity.size(); i++) {
@@ -283,6 +291,8 @@ int main(int argc, char** argv) {
 		glo::wctx.event.consume();
 		glo::game.update_noise();
 
+		glo::wctx.entity.purge_destroyed();
+
 		//////////////////////////////////////////////////////////
 		// Render
 		//////////////////////////////////////////////////////////
@@ -291,8 +301,14 @@ int main(int argc, char** argv) {
 		basic3d->set_float("u_noise_intensity", glo::game.noise.intensity);
 		basic3d->set_float("u_noise_seizure", glo::game.noise.seizure);
 	
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
-			Entity* e = glo::wctx.entity.arr[i];
+		std::vector<Entity*> entities_sorted = glo::wctx.entity.arr;
+		std::sort(entities_sorted.begin(), entities_sorted.end(), [&cam](Entity* a, Entity* b) {
+			float d1 = glm::distance(cam.pos, a->pos);
+			float d2 = glm::distance(cam.pos, b->pos);
+			return d1 > d2;
+		});
+		for (int i = 0; i < entities_sorted.size(); i++) {
+			Entity* e = entities_sorted[i];
 			if (e->has(Component::MODEL)) {
 				e->model.draw(e);
 			}

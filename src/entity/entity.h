@@ -25,6 +25,7 @@ struct Entity {
 	glm::vec3 ang;
 
 	unsigned c = Component::NONE;
+	bool destroyed = false;
 
 	void add(Component component) { c |= component; }
 	bool has(Component component) { return (c & component) == component;  }

@@ -17,3 +17,20 @@ void EntityMng::clear() {
 size_t EntityMng::size() const {
 	return arr.size();
 }
+
+void EntityMng::destroy(Entity* e) {
+	e->destroyed = true;
+}
+
+void EntityMng::purge_destroyed() {
+	std::vector<Entity*> after_purge;
+	for (Entity* e : arr) {
+		if (e->destroyed) {
+			delete e;
+			continue;
+		}
+		after_purge.push_back(e);
+	}
+
+	arr = after_purge;
+}
