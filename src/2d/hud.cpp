@@ -43,15 +43,14 @@ void Hud::draw(Shader* shd) {
 	int w, h;
 	glfwGetWindowSize(glo::wctx.win, &w, &h);
 	glfwGetWindowSize(glo::wctx.win, &w, &h);
-	glm::mat4 proj = glm::ortho((float)0, (float)w, -(float)h, (float)0, -100.0f, 100.0f);
+	glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
 
 	float hud_x = w - (map.tex->w * scale + 64);
 	float hud_y = h - (map.tex->h * scale + 64);
-
 	int frame = (map.button_flash_timer / 35 == 1) ? 0 : glo::game._cam_index;
 
 	shd->set_mat4("u_proj", &proj[0][0]);
-	shd->set_vec2("u_pos", hud_x, -hud_y);
+	shd->set_vec2("u_pos", hud_x, hud_y);
 	shd->set_vec2("u_scale", map.tex->w * scale, map.tex->h * scale);
 	shd->set_vec3("u_img_frame", map.tex->w / (float)map.tex->fullw, map.tex->h / (float)map.tex->fullh, frame);
 	shd->set_vec4("u_color", 1, 1, 1, 1);

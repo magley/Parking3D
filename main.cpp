@@ -14,8 +14,45 @@
 
 #include <soloud.h>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+unsigned int fbo, texture;
+
+void init_texture_framebuffer(int width, int height) {
+	glDeleteFramebuffers(1, &fbo);
+	glDeleteTextures(1, &texture);
+
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void on_framebuffer_resize() {
+	int width, height;
+	glfwGetWindowSize(glo::wctx.win, &width, &height);
+	//glOrtho(0, width, height, 0, 1, -1);
 	glViewport(0, 0, width, height);
+	//init_texture_framebuffer(width, height);
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+	on_framebuffer_resize();
 }
 
 int main(int argc, char** argv) {
@@ -38,6 +75,9 @@ int main(int argc, char** argv) {
 	Model* mdl_house_window = glo::wctx.resmng.load_mdl("window.obj");
 	Shader* basic3d = glo::wctx.resmng.load_shd("basic3d");
 	Shader* basic2d = glo::wctx.resmng.load_shd("basic2d");
+
+	init_texture_framebuffer(800, 600);
+	Texture* tex_dynamic = new Texture(texture, 800, 600);
 
 	glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
 	basic3d->set_mat4("VP", &VP[0][0]);
@@ -69,6 +109,7 @@ int main(int argc, char** argv) {
 	parking->add(Component::MODEL);
 	parking->model.mdl = mdl_parking;
 	parking->model.shd = basic3d;
+	parking->model.mdl->meshes[2].material.emission_map = tex_dynamic;
 
 	Entity* house_window = glo::wctx.entity.add(glm::vec3(-8.4, 2.1, -21.3));
 	house_window->add(Component::MODEL);
@@ -168,9 +209,6 @@ int main(int argc, char** argv) {
 
 		glo::wctx.input.update(glo::wctx.win);
 
-
-		/////////////////////////////////////////////////
-
 		Input& input = glo::wctx.input;
 		for (int i = 0; i < 6; i++) {
 			Entity* car = nullptr;
@@ -198,8 +236,6 @@ int main(int argc, char** argv) {
 				}
 			}
 		}
-
-		/////////////////////////////////////////////////
 
 		float dx = input.down(GLFW_KEY_T) - input.down(GLFW_KEY_Y);
 		float dy = input.down(GLFW_KEY_G) - input.down(GLFW_KEY_H);
@@ -240,9 +276,6 @@ int main(int argc, char** argv) {
 				printf("%d [%f %f %f]  [%f %f %f]\n", i, e->pos.x, e->pos.y, e->pos.z, e->ang.x, e->ang.y, e->ang.z);
 			}
 		}
-
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (int i = 0; i < glo::wctx.entity.size(); i++) {
 			Entity* e = glo::wctx.entity.arr[i];
@@ -302,6 +335,11 @@ int main(int argc, char** argv) {
 		// Render
 		//////////////////////////////////////////////////////////
 
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST);
+
 		basic3d->set_int("u_noise_seed", glo::game.noise.rand);
 		basic3d->set_float("u_noise_intensity", glo::game.noise.intensity);
 		basic3d->set_float("u_noise_seizure", glo::game.noise.seizure);
@@ -319,23 +357,37 @@ int main(int argc, char** argv) {
 			}
 		}
 
+		glDisable(GL_DEPTH_TEST); // TODO: Don't do this, but prevent 2D objects from hiding one another.
+
 		hud.draw(basic2d);
-		parking2d.draw(basic2d);
 
 		// Draw crosshair.
 		if (glo::game.lock_cursor) {
 			int w, h;
 			glfwGetWindowSize(glo::wctx.win, &w, &h);
 			glfwGetWindowSize(glo::wctx.win, &w, &h);
-			glm::mat4 proj = glm::ortho((float)0, (float)w, -(float)h, (float)0, -100.0f, 100.0f);
+			glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
 
 			basic2d->set_mat4("u_proj", &proj[0][0]);
-			basic2d->set_vec2("u_pos", w / 2, -h /2);
+			basic2d->set_vec2("u_pos", w / 2, h / 2);
 			basic2d->set_vec2("u_scale", tex_crosshair->w, tex_crosshair->h);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_crosshair);
 		}
 
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+		glOrtho(0.0, 800, 600.0, 0, -10.0, 10.0);
+		glViewport(0, 0, 800, 600);
+		parking2d.draw(basic2d);
+
+		{
+			int w, h;
+			glfwGetWindowSize(glo::wctx.win, &w, &h);
+			glViewport(0, 0, w, h);
+		}
+		
 		glfwSwapBuffers(glo::wctx.win);
 	}
 

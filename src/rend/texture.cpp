@@ -3,6 +3,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "lib/stb_image.h"
 
+Texture::Texture(unsigned tex, unsigned w, unsigned h):
+	tex(tex), w(w), h(h), fullw(w), fullh(h) {
+}
 
 Texture::Texture(const char* fname, int frames) {
 	int x, y, n;

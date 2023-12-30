@@ -7,5 +7,6 @@ struct Texture {
 	unsigned fullw = 0;
 	unsigned fullh = 0;
 
+	Texture(unsigned tex, unsigned w, unsigned h);
 	Texture(const char* fname, int frames = 1);
 };

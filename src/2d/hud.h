@@ -6,7 +6,7 @@
 #include "rend/shader.h"
 
 struct Hud {
-	float scale = 0.75;
+	float scale = 1;
 	struct {
 		glm::vec2 pos;
 		std::vector<BBox> cam_buttons;

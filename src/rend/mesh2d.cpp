@@ -22,22 +22,24 @@ void Mesh2D::draw(const Shader* shd, Texture* texture) {
 	switch (type) {
 	case SQUARE:
 		glDrawArrays(GL_TRIANGLES, 0, vertices_count);
-		return;
+		break;
 	case CIRCLE:
 		glDrawArrays(GL_POLYGON, 0, vertices_count);
-		return;
+		break;
 	}
+
+	glBindVertexArray(0);
 }
 
 void Mesh2D::init_square() {
 	float vertices[] = {
-		-0.5 + 0.5, -0.5 - 0.5,		0.0, 1.0,
-		+0.5 + 0.5, -0.5 - 0.5,		1.0, 1.0,
-		+0.5 + 0.5, +0.5 - 0.5,		1.0, 0.0,
+		+0.5 + 0.5, +0.5 + 0.5,		1.0, 1.0,
+		+0.5 + 0.5, -0.5 + 0.5,		1.0, 0.0,
+		-0.5 + 0.5, -0.5 + 0.5,		0.0, 0.0,
 
-		-0.5 + 0.5, -0.5 - 0.5,		0.0, 1.0,
-		+0.5 + 0.5, +0.5 - 0.5,		1.0, 0.0,
-		-0.5 + 0.5, +0.5 - 0.5,		0.0, 0.0,
+		-0.5 + 0.5, +0.5 + 0.5,		0.0, 1.0,
+		+0.5 + 0.5, +0.5 + 0.5,		1.0, 1.0,
+		-0.5 + 0.5, -0.5 + 0.5,		0.0, 0.0,
 	};
 	vertices_count = 6;
 
@@ -60,7 +62,8 @@ void Mesh2D::init_circle() {
 	vertices_count = 100;
 
 	for (int i = 0; i < vertices_count; i++) {
-		float ang = glm::radians(360.0f / vertices_count * i);
+		int j = (vertices_count - i - 1); // Go in reverse so that the polygon is a front face.
+		float ang = glm::radians(360.0f / vertices_count * j);
 		float coss = glm::cos(ang);
 		float sinn = glm::sin(ang);
 		vertices[i * 4 + 0] = coss;
