@@ -45,7 +45,7 @@ bool CButton::is_pushed_right_now(Entity* self) const {
 	}
 
 	glm::vec3 front = free_cam->cam.get_front();
-	if (free_cam->cam.type != CCam::FREE) {
+	if (free_cam->cam.type != CCam::FREE && free_cam->cam.type != CCam::FREE_STATIONARY) {
 		glm::vec3 mcurr = glm::vec3(glo::wctx.input.mp_curr, 1);
 		front = screen_coords_raycast(mcurr.x, mcurr.y, glo::wctx.cam.view(), glo::wctx.cam.proj);
 	}
@@ -66,10 +66,11 @@ bool CButton::is_pushed_right_now(Entity* self) const {
 }
 
 Entity* CButton::get_free_cam_if_active() const {
+	// TODO: Rename func.
 	for (int i = 0; i < glo::wctx.entity.arr.size(); i++) {
 		Entity* e = glo::wctx.entity.arr[i];
 
-		if (e->has(Component::CAM) && /* e->cam.type == CCam::FREE && */ e->cam.active) {
+		if (e->has(Component::CAM) && e->cam.active) {
 			return e;
 		}
 	}

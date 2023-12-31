@@ -5,6 +5,7 @@
 Hud::Hud(Mesh2D* mesh2d, Texture* map_tex) {
 	mesh_2d = mesh2d;
 	map.tex = map_tex;
+	scale = 0.75;
 	init();
 }
 
@@ -24,11 +25,24 @@ void Hud::update() {
 	Input& input = glo::wctx.input;
 
 	if (input.mpress(GLFW_MOUSE_BUTTON_LEFT)) {
-		for (int i = 0; i < map.cam_buttons.size(); i++) {
-			BBox bbox = map.cam_buttons[i] + map.pos;
-			if (bbox.contains(input.mp_curr)) {
-				glo::game.set_cam(i + 1); // 0 is debug free camera.
-				map.button_flash_timer = 0; // Looks better if it's green when you click it.
+		if (glo::game._cam_index >= 1 && glo::game._cam_index <= 4) {
+			for (int i = 0; i < map.cam_buttons.size(); i++) {
+				BBox bbox = map.cam_buttons[i] + map.pos;
+				if (bbox.contains(input.mp_curr)) {
+					glo::game.set_cam(i + 1); // 0 is debug freecam.
+					map.button_flash_timer = 0; // Looks better if it's green when you click it.
+				}
+			}
+
+			if (glo::game._cam_index >= 1 && glo::game._cam_index <= 4) {
+				Texture* tex_cam_hud = glo::wctx.resmng.load_tex("tex_cam_hud.png");
+				float cam_toggle_x = (w - tex_cam_hud->w) / 2;
+				float cam_toggle_y = (h - tex_cam_hud->h - 32);
+
+				BBox bbox = BBox({ cam_toggle_x , cam_toggle_y }, { tex_cam_hud->w, tex_cam_hud->h });
+				if (bbox.contains(input.mp_curr)) {
+					glo::game.close_cam();
+				}
 			}
 		}
 	}
@@ -40,19 +54,31 @@ void Hud::update() {
 }
 
 void Hud::draw(Shader* shd) {
-	int w, h;
-	glfwGetWindowSize(glo::wctx.win, &w, &h);
-	glfwGetWindowSize(glo::wctx.win, &w, &h);
-	glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
+	if (glo::game._cam_index >= 1 && glo::game._cam_index <= 4) {
+		int w, h;
+		glfwGetWindowSize(glo::wctx.win, &w, &h);
+		glfwGetWindowSize(glo::wctx.win, &w, &h);
+		glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
 
-	float hud_x = w - (map.tex->w * scale + 64);
-	float hud_y = h - (map.tex->h * scale + 64);
-	int frame = (map.button_flash_timer / 35 == 1) ? 0 : glo::game._cam_index;
+		float hud_x = w - (map.tex->w * scale + 64);
+		float hud_y = h - (map.tex->h * scale + 64);
+		int frame = (map.button_flash_timer / 35 == 1) ? 0 : glo::game._cam_index;
 
-	shd->set_mat4("u_proj", &proj[0][0]);
-	shd->set_vec2("u_pos", hud_x, hud_y);
-	shd->set_vec2("u_scale", map.tex->w * scale, map.tex->h * scale);
-	shd->set_vec3("u_img_frame", map.tex->w / (float)map.tex->fullw, map.tex->h / (float)map.tex->fullh, frame);
-	shd->set_vec4("u_color", 1, 1, 1, 1);
-	mesh_2d->draw(shd, map.tex);
+		shd->set_mat4("u_proj", &proj[0][0]);
+		shd->set_vec2("u_pos", hud_x, hud_y);
+		shd->set_vec2("u_scale", map.tex->w * scale, map.tex->h * scale);
+		shd->set_vec3("u_img_frame", map.tex->w / (float)map.tex->fullw, map.tex->h / (float)map.tex->fullh, frame);
+		shd->set_vec4("u_color", 1, 1, 1, 1);
+		mesh_2d->draw(shd, map.tex);
+
+		Texture* tex_cam_hud = glo::wctx.resmng.load_tex("tex_cam_hud.png");
+		float cam_toggle_x = (w - tex_cam_hud->w) / 2;
+		float cam_toggle_y = (h - tex_cam_hud->h - 32);
+		shd->set_mat4("u_proj", &proj[0][0]);
+		shd->set_vec2("u_pos", cam_toggle_x, cam_toggle_y);
+		shd->set_vec2("u_scale", tex_cam_hud->w * scale, tex_cam_hud->h * scale);
+		shd->set_vec3("u_img_frame", 1, 1, 0);
+		shd->set_vec4("u_color", 1, 1, 1, 1);
+		mesh_2d->draw(shd, tex_cam_hud);
+	}
 }

@@ -68,5 +68,7 @@ void Parking2D::draw(Shader* shd) {
 		} else {
 			draw_circle(circle_x, circle_y, circle_r, Color(0, 1, 0), mesh_circle, shd, tex_pixel);
 		}
-	 }
+	}
+
+	shd->set_vec4("u_color", 1, 1, 1, 1);
 }

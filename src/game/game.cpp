@@ -25,20 +25,20 @@ void Game::set_cam(int index) {
 		e->cam.active = (index == cam_entity_target_index);
 
 		if (e->cam.active == true) {
-			lock_cursor = e->cam.type == CCam::FREE;
+			lock_cursor = e->cam.type == CCam::FREE || e->cam.type == CCam::FREE_STATIONARY;
 		}
 	}
 
-	if (_cam_index != 0) {
+	if (_cam_index != 0 && _cam_index != 5) {
 		noise.seizure_min = 0;
 		noise.intensity = 1.0;
+
+		WavSample* snd_cam_switch = glo::wctx.resmng.load_wav("cam_switch.wav");
+		glo::wctx.audio.play(snd_cam_switch);
 	}
 	else {
 		noise.intensity = 0;
 	}
-
-	WavSample* snd_cam_switch = glo::wctx.resmng.load_wav("cam_switch.wav");
-	glo::wctx.audio.play(snd_cam_switch);
 }
 
 void Game::update_noise() {
@@ -52,4 +52,36 @@ void Game::update_noise() {
 
 	noise.rand = rand() / 9;
 	noise.seizure = (rand() % (noise.seizure_min - noise.seizure_max)) + noise.seizure_min;
+}
+
+void Game::open_cam() {
+	Entity* mini_screen = nullptr;
+	for (Entity* e : glo::wctx.entity.arr) {
+		if (e->has(Component::MINISCREEN)) {
+			mini_screen = e;
+			break;
+		}
+	}
+
+	if (mini_screen == nullptr) {
+		return;
+	}
+
+	mini_screen->miniscreen.raise(mini_screen);
+}
+
+void Game::close_cam() {
+	Entity* mini_screen = nullptr;
+	for (Entity* e : glo::wctx.entity.arr) {
+		if (e->has(Component::MINISCREEN)) {
+			mini_screen = e;
+			break;
+		}
+	}
+
+	if (mini_screen == nullptr) {
+		return;
+	}
+
+	mini_screen->miniscreen.lower(mini_screen);
 }

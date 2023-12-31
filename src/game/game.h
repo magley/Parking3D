@@ -19,4 +19,6 @@ struct Game {
 
 	void set_cam(int index);
 	void update_noise();
+	void open_cam();
+	void close_cam();
 };

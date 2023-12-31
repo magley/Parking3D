@@ -46,9 +46,7 @@ void init_texture_framebuffer(int width, int height) {
 void on_framebuffer_resize() {
 	int width, height;
 	glfwGetWindowSize(glo::wctx.win, &width, &height);
-	//glOrtho(0, width, height, 0, 1, -1);
 	glViewport(0, 0, width, height);
-	//init_texture_framebuffer(width, height);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -73,6 +71,7 @@ int main(int argc, char** argv) {
 	Model* mdl_ramp = glo::wctx.resmng.load_mdl("ramp.obj");
 	Model* mdl_parking = glo::wctx.resmng.load_mdl("parking.obj");
 	Model* mdl_house_window = glo::wctx.resmng.load_mdl("window.obj");
+	Model* mdl_mini_screen = glo::wctx.resmng.load_mdl("mini_screen.obj");
 	Shader* basic3d = glo::wctx.resmng.load_shd("basic3d");
 	Shader* basic2d = glo::wctx.resmng.load_shd("basic2d");
 
@@ -110,11 +109,14 @@ int main(int argc, char** argv) {
 	parking->model.mdl = mdl_parking;
 	parking->model.shd = basic3d;
 	parking->model.mdl->meshes[2].material.emission_map = tex_dynamic;
+	parking->add(Component::AUDIO);
+	parking->audio.play("ambient.ogg", true);
 
 	Entity* house_window = glo::wctx.entity.add(glm::vec3(-8.4, 2.1, -21.3));
 	house_window->add(Component::MODEL);
 	house_window->model.mdl = mdl_house_window;
 	house_window->model.shd = basic3d;
+	house_window->model.transparent = true;
 
 	Entity* cam_free = glo::wctx.entity.add(glm::vec3(-3, 6, 3));
 	cam_free->add(Component::CAM);
@@ -133,7 +135,7 @@ int main(int argc, char** argv) {
 	cam1->cam = CCam(CCam::CCTV_SCANNER, false);
 	cam1->add(Component::LIGHT);
 	cam1->light.shd = basic3d;
-	cam1->light.light = Light(Light::SPOT_LIGHT, "spotLights[0]", { 0.056, 0.082, 0.082 }, { 0.2f, 0.25f, 0.3f }, { 0.45f, 0.45f, 0.45f });
+	cam1->light.light = Light(Light::SPOT_LIGHT, "spotLights[0]", { 0.016, 0.022, 0.022 }, { 0.2f, 0.25f, 0.3f }, { 0.45f, 0.45f, 0.45f });
 	cam1->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
 	cam1->light.light.apply_colors(basic3d);
 	cam1->light.light.apply_type_fields(basic3d);
@@ -145,7 +147,7 @@ int main(int argc, char** argv) {
 	cam2->cam = CCam(CCam::CCTV_SCANNER, false);
 	cam2->add(Component::LIGHT);
 	cam2->light.shd = basic3d;
-	cam2->light.light = Light(Light::SPOT_LIGHT, "spotLights[1]", { 0.056, 0.082, 0.082 }, { 0.2f, 0.25f, 0.3f }, { 0.45f, 0.45f, 0.45f });
+	cam2->light.light = Light(Light::SPOT_LIGHT, "spotLights[1]", { 0.016, 0.022, 0.022 }, { 0.2f, 0.25f, 0.3f }, { 0.45f, 0.45f, 0.45f });
 	cam2->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
 	cam2->light.light.apply_colors(basic3d);
 	cam2->light.light.apply_type_fields(basic3d);
@@ -159,7 +161,7 @@ int main(int argc, char** argv) {
 	Entity* cam4 = glo::wctx.entity.add(glm::vec3(-3.198956, 4.919804, -23.898209));
 	cam4->ang = glm::vec3(140.599930, -36.199982, 0.000000);
 	cam4->add(Component::CAM);
-	cam4->cam = CCam(CCam::CCTV_SCANNER, false);
+	cam4->cam = CCam(CCam::CCTV_STATIONARY, false);
 	cam4->light.shd = basic3d;
 	cam4->add(Component::LIGHT);
 	cam4->light.light = Light(Light::POINT_LIGHT, "pointLights[1]", { 0.05, 0.05, 0.1 }, { 0.53f, 0.2f, 0.2f }, { 0.75f, 0.75f, 0.75f });
@@ -169,7 +171,19 @@ int main(int argc, char** argv) {
 	cam4->light.light.apply_active(basic3d, true);
 	cam4->sub(Event::EVENT_TOGGLE_HOUSE_LIGHT);
 	cam4->add(Component::AUDIO);
-	cam4->audio.play_3d("light_buzz.mp3", cam4->pos, true);
+	cam4->audio.play_3d("light_buzz.ogg", cam4->pos, true);
+
+	Entity* cam5 = glo::wctx.entity.add(glm::vec3(-4.666153, 3.037676, -20.620951));
+	cam5->ang = glm::vec3(180, -20, 0);
+	cam5->add(Component::CAM);
+	cam5->cam = CCam(CCam::FREE_STATIONARY, false);
+
+	Entity* mini_screen = glo::wctx.entity.add(cam5->pos + glm::vec3(-0.5, -0.85, 0));
+	mini_screen->ang.z = 0;
+	mini_screen->add(Component::MODEL);
+	mini_screen->model.mdl = mdl_mini_screen;
+	mini_screen->model.shd = basic3d;
+	mini_screen->add(Component::MINISCREEN);
 
 	glo::game.parking_spots[0].pos = glm::vec3(13.286233, 0, 0.556348);
 	glo::game.parking_spots[1].pos = glm::vec3(13.286233, 0, 8.956244);
@@ -193,10 +207,6 @@ int main(int argc, char** argv) {
 	Hud hud(&mdl_2d, tex_map);
 	Parking2D parking2d(&mdl_2d, &mdl_2d_circle, tex_pixel, tex_parking_2d);
 
-	int seizure_min = 250;
-	int seizure_max = 500;
-	float noise_intensity = 0.2;
-
 	while (!glfwWindowShouldClose(glo::wctx.win)) {
 		glfwPollEvents();
 		
@@ -208,6 +218,20 @@ int main(int argc, char** argv) {
 		}
 
 		glo::wctx.input.update(glo::wctx.win);
+
+		if (cam5->ang.y < -54) { // When the cam is opened, this angle is reverted in game.cpp
+			glo::game.open_cam();
+		}
+
+		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {
+			bool is_in_camera_mode = glo::game._cam_index >= 1 && glo::game._cam_index <= 4;
+			if (is_in_camera_mode) {
+				glo::game.close_cam();
+			}
+			else {
+				glo::game.open_cam();
+			}
+		}
 
 		Input& input = glo::wctx.input;
 		for (int i = 0; i < 6; i++) {
@@ -266,10 +290,6 @@ int main(int argc, char** argv) {
 
 		glo::wctx.audio.update_3d_listener(cam.pos, cam.pos + cam.front, cam.up);
 
-		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {
-			glo::game.set_cam(glo::game._cam_index + 1);
-		}
-
 		if (glo::wctx.input.press(GLFW_KEY_Z)) {
 			for (int i = 0; i < glo::wctx.entity.size(); i++) {
 				Entity* e = glo::wctx.entity.arr[i];
@@ -320,6 +340,13 @@ int main(int argc, char** argv) {
 			}
 		}
 
+		for (int i = 0; i < glo::wctx.entity.size(); i++) {
+			Entity* e = glo::wctx.entity.arr[i];
+			if (e->has(Component::MINISCREEN)) {
+				e->miniscreen.update(e);
+			}
+		}
+
 		hud.update();
 
 		for (int i = 0; i < glo::wctx.entity.size(); i++) {
@@ -331,14 +358,23 @@ int main(int argc, char** argv) {
 
 		glo::wctx.entity.purge_destroyed();
 
-		//////////////////////////////////////////////////////////
+		//---------------------------------------------------------------------------------------------
 		// Render
-		//////////////////////////////////////////////////////////
+		//---------------------------------------------------------------------------------------------
+
+		//---------------------------------------------------
+		// Render 3D scene to the framebuffer.
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
+		{
+			int w, h;
+			glfwGetWindowSize(glo::wctx.win, &w, &h);
+			glViewport(0, 0, w, h);
+		}
+
 
 		basic3d->set_int("u_noise_seed", glo::game.noise.rand);
 		basic3d->set_float("u_noise_intensity", glo::game.noise.intensity);
@@ -346,9 +382,14 @@ int main(int argc, char** argv) {
 	
 		std::vector<Entity*> entities_sorted = glo::wctx.entity.arr;
 		std::sort(entities_sorted.begin(), entities_sorted.end(), [&cam](Entity* a, Entity* b) {
-			float d1 = glm::distance(cam.pos, a->pos);
-			float d2 = glm::distance(cam.pos, b->pos);
-			return d1 > d2;
+			int at = a->model.transparent;
+			int bt = b->model.transparent;
+			if (at < bt) return true;
+			float d1 = glm::length(cam.pos - a->pos);
+			float d2 = glm::length(cam.pos - b->pos);
+			if (at == bt && !at) return d1 < d2;
+			if (at == bt && at) return d1 > d2;
+			return false;
 		});
 		for (int i = 0; i < entities_sorted.size(); i++) {
 			Entity* e = entities_sorted[i];
@@ -357,17 +398,28 @@ int main(int argc, char** argv) {
 			}
 		}
 
+		//---------------------------------------------------
+		// Render 2D scene to fbo.
+
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
+		glViewport(0, 0, 800, 600);
 		glDisable(GL_DEPTH_TEST); // TODO: Don't do this, but prevent 2D objects from hiding one another.
+		parking2d.draw(basic2d);
+
+		//---------------------------------------------------
+		// Render HUD & crosshair to the framebuffer.
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		int w, h;
+		glfwGetWindowSize(glo::wctx.win, &w, &h);
+		glViewport(0, 0, w, h);
+		glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
 
 		hud.draw(basic2d);
-
-		// Draw crosshair.
 		if (glo::game.lock_cursor) {
-			int w, h;
-			glfwGetWindowSize(glo::wctx.win, &w, &h);
-			glfwGetWindowSize(glo::wctx.win, &w, &h);
-			glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
-
 			basic2d->set_mat4("u_proj", &proj[0][0]);
 			basic2d->set_vec2("u_pos", w / 2, h / 2);
 			basic2d->set_vec2("u_scale", tex_crosshair->w, tex_crosshair->h);
@@ -375,19 +427,6 @@ int main(int argc, char** argv) {
 			mdl_2d.draw(basic2d, tex_crosshair);
 		}
 
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
-		glOrtho(0.0, 800, 600.0, 0, -10.0, 10.0);
-		glViewport(0, 0, 800, 600);
-		parking2d.draw(basic2d);
-
-		{
-			int w, h;
-			glfwGetWindowSize(glo::wctx.win, &w, &h);
-			glViewport(0, 0, w, h);
-		}
-		
 		glfwSwapBuffers(glo::wctx.win);
 	}
 

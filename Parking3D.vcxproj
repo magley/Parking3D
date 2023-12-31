@@ -142,6 +142,7 @@
     <ClCompile Include="src\entity\ccam.cpp" />
     <ClCompile Include="src\entity\ccar.cpp" />
     <ClCompile Include="src\entity\clight.cpp" />
+    <ClCompile Include="src\entity\cminiscreen.cpp" />
     <ClCompile Include="src\entity\cmodel.cpp" />
     <ClCompile Include="src\entity\cramp.cpp" />
     <ClCompile Include="src\entity\entity.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="src\entity\ccam.h" />
     <ClInclude Include="src\entity\ccar.h" />
     <ClInclude Include="src\entity\clight.h" />
+    <ClInclude Include="src\entity\cminiscreen.h" />
     <ClInclude Include="src\entity\cmodel.h" />
     <ClInclude Include="src\entity\cramp.h" />
     <ClInclude Include="src\entity\entity.h" />

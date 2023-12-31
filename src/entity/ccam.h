@@ -9,6 +9,8 @@ struct CCam {
 	enum Type {
 		CCTV_SCANNER,
 		CCTV_TOPDOWN,
+		CCTV_STATIONARY,
+		FREE_STATIONARY,
 		FREE
 	};
 	
@@ -34,4 +36,10 @@ private:
 
 	void update_pitch_yaw_from_ang(Entity* self);
 	void update_front_from_pitch_yaw(Entity* self);
+
+	void _update_cctv_scanner(Entity* self);
+	void _update_cctv_topdown(Entity* self);
+	void _update_cctv_stationary(Entity* self);
+	void _update_stationary(Entity* self);
+	void _update_free(Entity* self);
 };

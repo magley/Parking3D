@@ -8,16 +8,18 @@
 #include "cbutton.h"
 #include "ccar.h"
 #include "caudio.h"
+#include "cminiscreen.h"
 
 enum Component {
-	NONE  = 0,
-	MODEL = 1,
-	RAMP  = 2,
-	CAM   = 4,
-	LIGHT = 8,
-	BUTTON= 16,
-	CAR   = 32,
-	AUDIO = 64,
+	NONE		= 0,
+	MODEL		= 1,
+	RAMP		= 2,
+	CAM			= 4,
+	LIGHT		= 8,
+	BUTTON		= 16,
+	CAR			= 32,
+	AUDIO		= 64,
+	MINISCREEN	= 128
 };
 
 struct Entity {
@@ -37,6 +39,7 @@ struct Entity {
 	CButton button;
 	CCar car;
 	CAudio audio;
+	CMiniScreen miniscreen;
 
 	bool event_sub[EVENT_size] = { false };
 	void sub(Event ev) { event_sub[ev] = true; }
