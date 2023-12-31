@@ -31,7 +31,7 @@ void Game::set_cam(int index) {
 
 	if (_cam_index != 0 && _cam_index != 5) {
 		noise.seizure_min = 0;
-		noise.intensity = 1.0;
+		noise.intensity = 2.0;
 
 		WavSample* snd_cam_switch = glo::wctx.resmng.load_wav("cam_switch.wav");
 		glo::wctx.audio.play(snd_cam_switch);
@@ -47,7 +47,7 @@ void Game::update_noise() {
 	}
 
 	if (noise.intensity > 0.2) {
-		noise.intensity -= 0.01;
+		noise.intensity -= 0.04;
 	}
 
 	noise.rand = rand() / 9;

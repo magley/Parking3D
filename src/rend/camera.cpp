@@ -7,7 +7,7 @@ void Camera::update_proj() {
 	glfwGetWindowSize(glo::wctx.win, &w, &h);
 
 	if (proj_is_perspective) {
-		proj = glm::perspective(glm::radians(45.0f), w / (float)h, 0.1f, 100.0f);
+		proj = glm::perspective(glm::radians(60.0f), w / (float)h, 0.1f, 100.0f);
 	}
 	else {
 		float scale = 10.0f;

@@ -18,6 +18,7 @@ struct WinCtx {
 
 	bool wireframe = false;
 	bool shaded = true;
+	bool cars_transparent_2d = false;
 
 	WinCtx() {};
 };

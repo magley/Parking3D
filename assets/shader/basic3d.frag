@@ -161,6 +161,19 @@ void main() {
 
 		// Noise
 		float r = noise(gl_FragCoord.xy / u_noise_seizure, u_noise_seed);
-		col += (vec4(r, r, r, 0) * u_noise_intensity);
+		vec4 noise = vec4(r * u_noise_intensity, r * u_noise_intensity, r * u_noise_intensity, 0);
+		col += noise;
+
+		// Scanlines
+		const int scanline_width = 4;
+		const float scanline_intensity = 0.4;
+		const vec3 scanline_color = vec3(0.95, 0.95, 1.0);
+
+		vec3 scanline_col_inv = 1 - scanline_color;
+		float offsety = u_noise_seed % scanline_width;
+		float s = (int(gl_FragCoord.y + offsety) / scanline_width) % 2;
+		vec4 scanline = vec4(s, s, s, 0) + vec4(scanline_col_inv, 0);
+		col -= scanline * scanline_intensity * ceil(u_noise_intensity);
+
 	}
 }

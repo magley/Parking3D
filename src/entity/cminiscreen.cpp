@@ -42,7 +42,7 @@ void CMiniScreen::update(Entity* self) {
 	}
 
 	if (glo::game._cam_index == 5) {
-		self->pos = (float)0.7 * glo::wctx.cam.front;
+		self->pos = (float)0.4 * glo::wctx.cam.front;
 		self->pos += -0.7f * glo::wctx.cam.up;
 		self->pos += glo::wctx.cam.pos;
 

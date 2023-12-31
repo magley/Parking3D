@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
 
 		glo::wctx.input.update(glo::wctx.win);
 
-		if (cam5->ang.y < -54) { // When the cam is opened, this angle is reverted in game.cpp
+		if (cam5->ang.y < -54) {
 			glo::game.open_cam();
 		}
 
@@ -231,6 +231,13 @@ int main(int argc, char** argv) {
 			else {
 				glo::game.open_cam();
 			}
+		}
+
+		if (glo::wctx.input.press(GLFW_KEY_N)) {
+			glo::wctx.cars_transparent_2d = true;
+		}
+		if (glo::wctx.input.press(GLFW_KEY_B)) {
+			glo::wctx.cars_transparent_2d = false;
 		}
 
 		Input& input = glo::wctx.input;
@@ -409,7 +416,7 @@ int main(int argc, char** argv) {
 		parking2d.draw(basic2d);
 
 		//---------------------------------------------------
-		// Render HUD & crosshair to the framebuffer.
+		// Render HUD, crosshair and watermakr to the framebuffer.
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -425,6 +432,14 @@ int main(int argc, char** argv) {
 			basic2d->set_vec2("u_scale", tex_crosshair->w, tex_crosshair->h);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_crosshair);
+		}
+
+		{
+			Texture* tex_watermark = glo::wctx.resmng.load_tex("tex_watermark.png");
+			basic2d->set_vec2("u_pos", 0, h - tex_watermark->h);
+			basic2d->set_vec2("u_scale", tex_watermark->w, tex_watermark->h);
+			basic2d->set_vec3("u_img_frame", 1, 1, 0);
+			mdl_2d.draw(basic2d, tex_watermark);
 		}
 
 		glfwSwapBuffers(glo::wctx.win);

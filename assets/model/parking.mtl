@@ -12,6 +12,7 @@ d 1.000000
 illum 2
 map_Kd tex_concrete.png
 map_Ks tex_concrete_specular.png
+map_Ke tex_concrete_emission.png
 
 newmtl Material.002
 Ns 225.000000
