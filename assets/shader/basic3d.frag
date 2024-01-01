@@ -9,6 +9,7 @@ struct Material {
 	sampler2D diffuse_map;
 	sampler2D specular_map;
 	sampler2D emission_map;
+	sampler2D normal_map;
 };
 
 struct PointLight {
@@ -38,6 +39,7 @@ struct SpotLight {
 in vec2 f_uv;
 in vec3 f_norm;
 in vec3 fragPos;
+in mat3 f_TBN;
 
 layout(location = 0) out vec4 col;
 
@@ -68,6 +70,13 @@ float when_gt(float x, float y) {
 	return max(sign(x - y), 0.0);
 }
 
+vec3 get_normal() {
+    vec3 normal = texture(material0.normal_map, f_uv).rgb;
+    normal = normalize(normal * 2.0 - 1.0); 
+	normal = normalize(f_TBN * normal); 
+	return normal;
+}
+
 vec3 calc_point_light(PointLight light) {
 	// Texture maps.
 	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv) * vec4(u_tint, 1);;
@@ -77,7 +86,7 @@ vec3 calc_point_light(PointLight light) {
 	vec3 ambient = light.ambient * material0.ambient * tex_diffuse.rgb;
 
 	// Diffuse.
-	vec3 norm = normalize(f_norm);
+	vec3 norm = normalize(get_normal());
 	vec3 lightDir = normalize(light.position - fragPos);
 	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = diff * (light.diffuse * material0.diffuse) * tex_diffuse.rgb;
@@ -108,7 +117,7 @@ vec3 calc_spot_light(SpotLight light) {
 	vec3 ambient = light.ambient * material0.ambient * tex_diffuse.rgb;
 
 	// Diffuse.
-	vec3 norm = normalize(f_norm);
+	vec3 norm = normalize(get_normal());
 	vec3 lightDir = normalize(light.position - fragPos);
 	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = diff * (light.diffuse * material0.diffuse) * tex_diffuse.rgb;

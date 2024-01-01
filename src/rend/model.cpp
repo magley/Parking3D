@@ -17,7 +17,7 @@ void Model::draw(Shader* shader) {
 
 void Model::load(std::string path) {
 	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         printf("Assimp error: %s\n", import.GetErrorString());
@@ -50,10 +50,12 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
         auto& v = mesh->mVertices[i];
         auto& n = mesh->mNormals[i];
         auto& uv = mesh->mTextureCoords[0][i];
+        auto& t = mesh->mTangents[i];
         Vertex vert{};
         vert.Position = glm::vec3(v.x, v.y, v.z);
         vert.Normal = glm::vec3(n.x, n.y, n.z);
         vert.TexCoords = glm::vec2(uv.x, uv.y);
+        vert.Tangent = glm::vec3(t.x, t.y, t.z);
 
         vertices.push_back(vert);
     }
@@ -86,6 +88,7 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
         material.diffuse_map = load_material_texture(mat, aiTextureType_DIFFUSE);
         material.specular_map = load_material_texture(mat, aiTextureType_SPECULAR);
         material.emission_map = load_material_texture(mat, aiTextureType_EMISSIVE);
+        material.normal_map = load_material_texture(mat, aiTextureType_NORMALS);
 
         if (material.diffuse_map == nullptr) {
             material.diffuse_map = glo::wctx.resmng.load_tex("tex_default_diffuse.png");
@@ -95,6 +98,9 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
         }
         if (material.emission_map == nullptr) {
             material.emission_map = glo::wctx.resmng.load_tex("tex_default_emission.png");
+        }
+        if (material.normal_map == nullptr) {
+            material.normal_map = glo::wctx.resmng.load_tex("tex_default_normal.png");
         }
     }
 

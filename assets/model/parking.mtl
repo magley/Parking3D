@@ -13,6 +13,7 @@ illum 2
 map_Kd tex_concrete.png
 map_Ks tex_concrete_specular.png
 map_Ke tex_concrete_emission.png
+map_Kn tex_concrete_normal.png
 
 newmtl Material.002
 Ns 225.000000
@@ -24,6 +25,7 @@ Ni 1.450000
 d 1.000000
 illum 2
 map_Kd tex_house.png
+map_Kn tex_house_normal.png
 
 newmtl Material_DynamicScreen
 Ns 225.000000

@@ -10,4 +10,5 @@ struct Material {
 	Texture* diffuse_map;
 	Texture* specular_map;
 	Texture* emission_map;
+	Texture* normal_map;
 };

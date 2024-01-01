@@ -31,6 +31,8 @@ void Mesh::setup_mesh(const std::vector<Vertex>& vertices, const std::vector<uns
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, TexCoords)));
 	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(offsetof(Vertex, Tangent)));
+	glEnableVertexAttribArray(3);
 
 	indices_size = indices.size();
 
@@ -59,6 +61,10 @@ void Mesh::draw(const Shader* shd) {
 	shd->set_int("material0.emission_map", 2);
 	glActiveTexture(GL_TEXTURE0 + 2);
 	glBindTexture(GL_TEXTURE_2D, material.emission_map->tex);
+
+	shd->set_int("material0.normal_map", 3);
+	glActiveTexture(GL_TEXTURE0 + 3);
+	glBindTexture(GL_TEXTURE_2D, material.normal_map->tex);
 
 	glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, 0);
 }
