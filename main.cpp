@@ -72,6 +72,8 @@ int main(int argc, char** argv) {
 	Model* mdl_parking = glo::wctx.resmng.load_mdl("parking.obj");
 	Model* mdl_house_window = glo::wctx.resmng.load_mdl("window.obj");
 	Model* mdl_mini_screen = glo::wctx.resmng.load_mdl("mini_screen.obj");
+	Model* mdl_human = glo::wctx.resmng.load_mdl("human_sitting.obj");
+	Model* mdl_chair = glo::wctx.resmng.load_mdl("chair.obj");
 	Shader* basic3d = glo::wctx.resmng.load_shd("basic3d");
 	Shader* basic2d = glo::wctx.resmng.load_shd("basic2d");
 
@@ -135,7 +137,7 @@ int main(int argc, char** argv) {
 	cam1->cam = CCam(CCam::CCTV_SCANNER, false);
 	cam1->add(Component::LIGHT);
 	cam1->light.shd = basic3d;
-	cam1->light.light = Light(Light::SPOT_LIGHT, "spotLights[0]", { 0.016, 0.022, 0.022 }, { 0.2f, 0.25f, 0.3f }, { 0.45f, 0.45f, 0.45f });
+	cam1->light.light = Light(Light::SPOT_LIGHT, "spotLights[0]", { 0.016, 0.022, 0.022 }, glm::vec3({ 0.2f, 0.25f, 0.3f }) * 2.5f, { 0.45f, 0.45f, 0.45f });
 	cam1->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
 	cam1->light.light.apply_colors(basic3d);
 	cam1->light.light.apply_type_fields(basic3d);
@@ -145,9 +147,10 @@ int main(int argc, char** argv) {
 	cam2->ang = glm::vec3(-39.000072, -46.999989, 0.000000);
 	cam2->add(Component::CAM);
 	cam2->cam = CCam(CCam::CCTV_SCANNER, false);
+	cam2->cam.timer = 45;
 	cam2->add(Component::LIGHT);
 	cam2->light.shd = basic3d;
-	cam2->light.light = Light(Light::SPOT_LIGHT, "spotLights[1]", { 0.016, 0.022, 0.022 }, { 0.2f, 0.25f, 0.3f }, { 0.45f, 0.45f, 0.45f });
+	cam2->light.light = Light(Light::SPOT_LIGHT, "spotLights[1]", { 0.016, 0.022, 0.022 }, glm::vec3({ 0.2f, 0.25f, 0.3f }) * 2.5f, { 0.45f, 0.45f, 0.45f });
 	cam2->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
 	cam2->light.light.apply_colors(basic3d);
 	cam2->light.light.apply_type_fields(basic3d);
@@ -164,8 +167,8 @@ int main(int argc, char** argv) {
 	cam4->cam = CCam(CCam::CCTV_STATIONARY, false);
 	cam4->light.shd = basic3d;
 	cam4->add(Component::LIGHT);
-	cam4->light.light = Light(Light::POINT_LIGHT, "pointLights[1]", { 0.05, 0.05, 0.1 }, { 0.53f, 0.2f, 0.2f }, { 0.75f, 0.75f, 0.75f });
-	cam4->light.light.pointlight = PointLight_Fields(1, 0.022f, 0.0019f);
+	cam4->light.light = Light(Light::POINT_LIGHT, "pointLights[1]", { 0.3, 0.3, 0.4 }, { 0.7f, 0.5f, 0.5f }, { 0.85f, 0.85f, 0.85f });
+	cam4->light.light.pointlight = PointLight_Fields(1, 0.072f, 0.0049f);
 	cam4->light.light.apply_colors(basic3d);
 	cam4->light.light.apply_type_fields(basic3d);
 	cam4->light.light.apply_active(basic3d, true);
@@ -184,6 +187,16 @@ int main(int argc, char** argv) {
 	mini_screen->model.mdl = mdl_mini_screen;
 	mini_screen->model.shd = basic3d;
 	mini_screen->add(Component::MINISCREEN);
+
+	Entity* human = glo::wctx.entity.add(cam5->pos + glm::vec3(0.5, -2.0, -0));
+	human->add(Component::MODEL);
+	human->model.mdl = mdl_human;
+	human->model.shd = basic3d;
+
+	Entity* chair = glo::wctx.entity.add(cam5->pos + glm::vec3(0.5, -2.0, -0));
+	chair->add(Component::MODEL);
+	chair->model.mdl = mdl_chair;
+	chair->model.shd = basic3d;
 
 	glo::game.parking_spots[0].pos = glm::vec3(13.286233, 0, 0.556348);
 	glo::game.parking_spots[1].pos = glm::vec3(13.286233, 0, 8.956244);
@@ -222,6 +235,8 @@ int main(int argc, char** argv) {
 		if (cam5->ang.y < -54) {
 			glo::game.open_cam();
 		}
+
+		human->model.visible = glo::game._cam_index != 5;
 
 		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {
 			bool is_in_camera_mode = glo::game._cam_index >= 1 && glo::game._cam_index <= 4;

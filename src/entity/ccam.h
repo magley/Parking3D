@@ -22,6 +22,7 @@ struct CCam {
 	void update(Entity* self);
 	void update_lights(Entity* self, Shader* shd);
 	glm::vec3 get_front() const;
+	int timer = 0;
 private:
 	glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
 	glm::vec3 front = glm::vec3(0.0, 0.0, -1.0);
@@ -29,7 +30,6 @@ private:
 	float sway_root_ang = 0;
 	float sway = 0;
 	int sway_dir = 1;
-	int timer = 0;
 
 	float pitch = 0;
 	float yaw = 0;

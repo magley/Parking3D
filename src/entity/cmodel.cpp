@@ -3,6 +3,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 void CModel::draw(Entity* self) {
+	if (!visible) {
+		return;
+	}
+
 	glm::mat4 model = glm::mat4(1.0);
 
 	if (self->has(Component::CAR)) {

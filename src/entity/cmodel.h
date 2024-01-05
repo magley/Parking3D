@@ -8,6 +8,7 @@ struct CModel {
 	Model* mdl = nullptr;
 	Shader* shd = nullptr;
 	bool transparent = false;
+	bool visible = true;
 
 	void draw(Entity* self);
 };
