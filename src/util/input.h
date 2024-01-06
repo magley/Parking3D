@@ -19,3 +19,7 @@ struct Input {
 	bool mpress(int button) const;
 	glm::vec2 mouse_vel() const;
 };
+
+namespace glo {
+	extern Input* input;
+}

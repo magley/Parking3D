@@ -1,10 +1,14 @@
 #include "camera.h"
 #include <glm/gtc/matrix_transform.hpp>
-#include "global.h"
+#include "ctx/winctx.h"
+
+namespace glo {
+	Camera* cam = nullptr;
+}
 
 void Camera::update_proj() {
 	int w, h;
-	glfwGetWindowSize(glo::wctx.win, &w, &h);
+	glfwGetWindowSize(glo::wctx->win, &w, &h);
 
 	if (proj_is_perspective) {
 		proj = glm::perspective(glm::radians(60.0f), w / (float)h, 0.1f, 100.0f);

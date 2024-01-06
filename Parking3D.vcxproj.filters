@@ -105,6 +105,9 @@
     <ClCompile Include="src\entity\cminiscreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -116,9 +119,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ctx\winctx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\fileutil.h">
@@ -221,6 +221,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\cminiscreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,8 +1,10 @@
 #include "game.h"
-#include "global.h"
+#include "entity/entitymng.h"
+#include "resource/res_mng.h"
+#include "audio/audiocore.h"
 
 namespace glo {
-	Game game = Game();
+	Game* game = nullptr;
 };
 
 void Game::set_cam(int index) {
@@ -10,8 +12,8 @@ void Game::set_cam(int index) {
 	_cam_index = index;
 
 	std::vector<int> cam_entity_index;
-	for (int i = 0; i < glo::wctx.entity.size(); i++) {
-		Entity* e = glo::wctx.entity.arr[i];
+	for (int i = 0; i < glo::entity->size(); i++) {
+		Entity* e = glo::entity->arr[i];
 		if (e->has(Component::CAM)) {
 			cam_entity_index.push_back(i);
 		}
@@ -28,7 +30,7 @@ void Game::set_cam(int index) {
 
 	for (int i = 0; i < cam_entity_index.size(); i++) {
 		int index = cam_entity_index[i];
-		Entity* e = glo::wctx.entity.arr[index];
+		Entity* e = glo::entity->arr[index];
 		e->cam.active = (index == cam_entity_target_index);
 
 		if (e->cam.active == true) {
@@ -40,8 +42,8 @@ void Game::set_cam(int index) {
 		noise.seizure_min = 0;
 		noise.intensity = 2.0;
 
-		WavSample* snd_cam_switch = glo::wctx.resmng.load_wav("cam_switch.wav");
-		glo::wctx.audio.play(snd_cam_switch);
+		WavSample* snd_cam_switch = glo::resmng->load_wav("cam_switch.wav");
+		glo::audio->play(snd_cam_switch);
 		if (prev_cam_index == 0 || prev_cam_index == 5) {
 			open_cam();
 		}
@@ -69,7 +71,7 @@ void Game::update_noise() {
 
 void Game::open_cam() {
 	Entity* mini_screen = nullptr;
-	for (Entity* e : glo::wctx.entity.arr) {
+	for (Entity* e : glo::entity->arr) {
 		if (e->has(Component::MINISCREEN)) {
 			mini_screen = e;
 			break;
@@ -85,7 +87,7 @@ void Game::open_cam() {
 
 void Game::close_cam() {
 	Entity* mini_screen = nullptr;
-	for (Entity* e : glo::wctx.entity.arr) {
+	for (Entity* e : glo::entity->arr) {
 		if (e->has(Component::MINISCREEN)) {
 			mini_screen = e;
 			break;

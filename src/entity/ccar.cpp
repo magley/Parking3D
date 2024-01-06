@@ -1,9 +1,11 @@
 #include "ccar.h"
-#include "global.h"
+
+#include "entity/entitymng.h"
+#include "game/game.h"
 
 Entity* _get_ramp() {
 	Entity* ramp = nullptr;
-	for (Entity* e : glo::wctx.entity.arr) {
+	for (Entity* e : glo::entity->arr) {
 		if (e->has(Component::RAMP)) {
 			ramp = e;
 			break;
@@ -74,7 +76,7 @@ void CCar::_update_at_ramp(Entity* self) {
 }
 
 void CCar::_update_toward_spot(Entity* self) {
-	const ParkingSpot spot = glo::game.parking_spots[spot_index];
+	const ParkingSpot spot = glo::game->parking_spots[spot_index];
 
 	float spd = 0.2f;
 	if (self->pos.x < spot.pos.x) self->pos.x += spd;
@@ -93,6 +95,6 @@ void CCar::_update_toward_spot(Entity* self) {
 void CCar::_update_at_spot(Entity* self) {
 	time_left--;
 	if (time_left == 0) {
-		glo::wctx.entity.destroy(self);
+		glo::entity->destroy(self);
 	}
 }

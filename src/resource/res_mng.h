@@ -50,3 +50,7 @@ private:
 	std::unordered_map<std::string, Model*> mdl;
 	std::unordered_map<std::string, WavSample*> wav;
 };
+
+namespace glo {
+	extern ResMng* resmng;
+}

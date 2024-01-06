@@ -1,6 +1,6 @@
 #include "model.h"
 #include <stdio.h>
-#include "global.h"
+#include "resource/res_mng.h"
 
 std::vector<Texture*> load_material_textures(aiMaterial* mat, aiTextureType type);
 Texture* load_material_texture(aiMaterial* mat, aiTextureType type);
@@ -91,16 +91,16 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene) {
         material.normal_map = load_material_texture(mat, aiTextureType_NORMALS);
 
         if (material.diffuse_map == nullptr) {
-            material.diffuse_map = glo::wctx.resmng.load_tex("tex_default_diffuse.png");
+            material.diffuse_map = glo::resmng->load_tex("tex_default_diffuse.png");
         }
         if (material.specular_map == nullptr) {
-            material.specular_map = glo::wctx.resmng.load_tex("tex_default_specular.png");
+            material.specular_map = glo::resmng->load_tex("tex_default_specular.png");
         }
         if (material.emission_map == nullptr) {
-            material.emission_map = glo::wctx.resmng.load_tex("tex_default_emission.png");
+            material.emission_map = glo::resmng->load_tex("tex_default_emission.png");
         }
         if (material.normal_map == nullptr) {
-            material.normal_map = glo::wctx.resmng.load_tex("tex_default_normal.png");
+            material.normal_map = glo::resmng->load_tex("tex_default_normal.png");
         }
     }
 
@@ -113,7 +113,7 @@ std::vector<Texture*> load_material_textures(aiMaterial* mat, aiTextureType type
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
-        Texture* tex = glo::wctx.resmng.load_tex(std::string(str.C_Str()));
+        Texture* tex = glo::resmng->load_tex(std::string(str.C_Str()));
         textures.push_back(tex);
     }
     return textures;
@@ -123,7 +123,7 @@ Texture* load_material_texture(aiMaterial* mat, aiTextureType type) {
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
-        Texture* tex = glo::wctx.resmng.load_tex(std::string(str.C_Str()));
+        Texture* tex = glo::resmng->load_tex(std::string(str.C_Str()));
         return tex;
     }
     return nullptr;

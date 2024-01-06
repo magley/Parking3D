@@ -11,3 +11,7 @@ struct EntityMng {
 	void destroy(Entity* e);
 	void purge_destroyed();
 };
+
+namespace glo {
+	extern EntityMng* entity;
+}

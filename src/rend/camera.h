@@ -15,3 +15,7 @@ struct Camera {
 	void update_proj();
 	glm::mat4 view() const;
 };
+
+namespace glo {
+	extern Camera* cam;
+}

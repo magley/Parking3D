@@ -1,8 +1,8 @@
 #include "entity.h"
-#include "global.h"
+#include "entity/event.h"
 
 void Entity::check_ev() {
-	EventMng& evmng = glo::wctx.event;
+	EventMng& evmng = *glo::event;
 	for (int i = 0; i < EVENT_size; i++) {
 		if (evmng.active[i] && event_sub[i]) {
 			on_event((Event)i);

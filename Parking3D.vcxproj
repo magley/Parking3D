@@ -160,6 +160,7 @@
     <ClCompile Include="src\rend\texture.cpp" />
     <ClCompile Include="src\resource\res_mng.cpp" />
     <ClCompile Include="src\util\input.cpp" />
+    <ClCompile Include="src\util\log.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -189,7 +190,6 @@
     <ClInclude Include="src\entity\event.h" />
     <ClInclude Include="src\game\game.h" />
     <ClInclude Include="src\game\parking_spot.h" />
-    <ClInclude Include="src\global.h" />
     <ClInclude Include="src\2d\hud.h" />
     <ClInclude Include="src\lib\stb_image.h" />
     <ClInclude Include="src\rend\camera.h" />
@@ -205,6 +205,7 @@
     <ClInclude Include="src\util\fileutil.h" />
     <ClInclude Include="src\util\glutil.h" />
     <ClInclude Include="src\util\input.h" />
+    <ClInclude Include="src\util\log.h" />
     <ClInclude Include="src\util\mathutil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

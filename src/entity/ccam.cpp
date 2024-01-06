@@ -1,6 +1,10 @@
 #include "ccam.h"
-#include "global.h"
+
 #include "rend/shader.h"
+#include "entity/entitymng.h"
+#include "util/input.h"
+#include "rend/camera.h"
+
 
 void CCam::update(Entity* self) {
 	switch (type) {
@@ -26,7 +30,7 @@ void CCam::update(Entity* self) {
 	}
 
 	if (active) {
-		Camera& cam = glo::wctx.cam;
+		Camera& cam = *glo::cam;
 		cam.pos = self->pos;
 		cam.front = front;
 		cam.up = up;
@@ -106,7 +110,7 @@ void CCam::_update_cctv_stationary(Entity* self) {
 }
 
 void CCam::_update_stationary(Entity* self) {
-	Input& input = glo::wctx.input;
+	Input& input = *glo::input;
 	int input_y = input.down(GLFW_KEY_W) - input.down(GLFW_KEY_S);
 	int input_x = input.down(GLFW_KEY_D) - input.down(GLFW_KEY_A);
 
@@ -120,7 +124,7 @@ void CCam::_update_stationary(Entity* self) {
 }
 
 void CCam::_update_free(Entity* self) {
-	Input& input = glo::wctx.input;
+	Input& input = *glo::input;
 	int input_y = input.down(GLFW_KEY_W) - input.down(GLFW_KEY_S);
 	int input_x = input.down(GLFW_KEY_D) - input.down(GLFW_KEY_A);
 

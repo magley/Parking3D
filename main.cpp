@@ -1,18 +1,27 @@
 #include <stdio.h>
-#include <iostream>
+#include <sstream>
+
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
-#include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <soloud.h>
 
-#include "global.h"
 #include "rend/model.h"
 #include "rend/light.h"
 #include "rend/mesh2d.h"
 #include "2d/hud.h"
 #include "2d/parking2d.h"
 
-#include <soloud.h>
+#include "ctx/winctx.h"
+#include "resource/res_mng.h"
+#include "rend/camera.h"
+#include "entity/entitymng.h"
+#include "game/game.h"
+#include "util/input.h"
+#include "entity/event.h"
+#include "audio/audiocore.h"
+
+#include "util/log.h"
 
 unsigned int fbo, texture;
 
@@ -45,7 +54,7 @@ void init_texture_framebuffer(int width, int height) {
 
 void on_framebuffer_resize() {
 	int width, height;
-	glfwGetWindowSize(glo::wctx.win, &width, &height);
+	glfwGetWindowSize(glo::wctx->win, &width, &height);
 	glViewport(0, 0, width, height);
 }
 
@@ -54,37 +63,63 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 int main(int argc, char** argv) {
+	// Initialize engine subsystems.
+
+	log("Initializing engine subsystems...");
+	glo::wctx = new WinCtx();
+	glo::audio = new AudioCore();
+	glo::cam = new Camera();
+	glo::entity = new EntityMng();
+	glo::event = new EventMng();
+	glo::game = new Game();
+	glo::input = new Input();
+	glo::resmng = new ResMng();
+
+	// Initialize OpenGL and the window context.
+
+	log("Creating a window...");
 	glfwInit();
-	glo::wctx.win = glfwCreateWindow(1280, 720, "Parking3D", nullptr, nullptr);
-	glfwMakeContextCurrent(glo::wctx.win);
-	glfwSetFramebufferSizeCallback(glo::wctx.win, framebuffer_size_callback);
+	glo::wctx->win = glfwCreateWindow(1280, 720, "Parking3D", nullptr, nullptr);
+	glfwMakeContextCurrent(glo::wctx->win);
+	glfwSetFramebufferSizeCallback(glo::wctx->win, framebuffer_size_callback);
 	glfwSwapInterval(1);
+	log("Initializing the OpenGL context...");
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	Model* mdl_car = glo::wctx.resmng.load_mdl("car.obj");
-	Model* mdl_button = glo::wctx.resmng.load_mdl("sphere.obj");
-	Model* mdl_ramp = glo::wctx.resmng.load_mdl("ramp.obj");
-	Model* mdl_parking = glo::wctx.resmng.load_mdl("parking.obj");
-	Model* mdl_house_window = glo::wctx.resmng.load_mdl("window.obj");
-	Model* mdl_mini_screen = glo::wctx.resmng.load_mdl("mini_screen.obj");
-	Model* mdl_human = glo::wctx.resmng.load_mdl("human_sitting.obj");
-	Model* mdl_chair = glo::wctx.resmng.load_mdl("chair.obj");
-	Model* mdl_ramp_base = glo::wctx.resmng.load_mdl("ramp_base.obj");
-	Shader* basic3d = glo::wctx.resmng.load_shd("basic3d");
-	Shader* basic2d = glo::wctx.resmng.load_shd("basic2d");
-
 	init_texture_framebuffer(800, 600);
-	Texture* tex_dynamic = new Texture(texture, 800, 600);
 
-	glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
+	// Entities.
+
+	log("Loading resources...");
+	Model* mdl_car = glo::resmng->load_mdl("car.obj");
+	Model* mdl_button = glo::resmng->load_mdl("sphere.obj");
+	Model* mdl_ramp = glo::resmng->load_mdl("ramp.obj");
+	Model* mdl_parking = glo::resmng->load_mdl("parking.obj");
+	Model* mdl_house_window = glo::resmng->load_mdl("window.obj");
+	Model* mdl_mini_screen = glo::resmng->load_mdl("mini_screen.obj");
+	Model* mdl_human = glo::resmng->load_mdl("human_sitting.obj");
+	Model* mdl_chair = glo::resmng->load_mdl("chair.obj");
+	Model* mdl_ramp_base = glo::resmng->load_mdl("ramp_base.obj");
+	Shader* basic3d = glo::resmng->load_shd("basic3d");
+	Shader* basic2d = glo::resmng->load_shd("basic2d");
+	Texture* tex_screen_framebuffer = new Texture(texture, 800, 600);
+	Texture* tex_map = glo::resmng->load_tex("tex_map.png", 5);
+	Texture* tex_crosshair = glo::resmng->load_tex("tex_crosshair.png");
+	Texture* tex_pixel = glo::resmng->load_tex("tex_pixel.png");
+	Texture* tex_parking_2d = glo::resmng->load_tex("tex_parking_2d.png");
+	Mesh2D mdl_2d(Mesh2D::SQUARE);
+	Mesh2D mdl_2d_circle(Mesh2D::CIRCLE);
+
+	glm::mat4 VP = glo::cam->proj * glo::cam->view();
 	basic3d->set_mat4("VP", &VP[0][0]);
 
-	Entity* btn_light = glo::wctx.entity.add(glm::vec3(-7.948277, 0.845271, -23.074425));
+	log("Creating entities...");
+
+	Entity* btn_light = glo::entity->add(glm::vec3(-7.948277, 0.845271, -23.074425));
 	btn_light->add(Component::MODEL);
 	btn_light->model.mdl = mdl_button;
 	btn_light->model.shd = basic3d;
@@ -92,7 +127,7 @@ int main(int argc, char** argv) {
 	btn_light->button = CButton(Event::EVENT_TOGGLE_HOUSE_LIGHT, false);
 	btn_light->button.radius = 0.15f;
 
-	Entity* btn_ramp = glo::wctx.entity.add(glm::vec3(-7.948277, 0.845271, -21.074425));
+	Entity* btn_ramp = glo::entity->add(glm::vec3(-7.948277, 0.845271, -21.074425));
 	btn_ramp->add(Component::MODEL);
 	btn_ramp->model.mdl = mdl_button;
 	btn_ramp->model.shd = basic3d;
@@ -100,33 +135,33 @@ int main(int argc, char** argv) {
 	btn_ramp->button = CButton(Event::EVENT_TOGGLE_RAMP, false);
 	btn_ramp->button.radius = 0.15f;
 
-	Entity* ramp = glo::wctx.entity.add(glm::vec3(-10.001070, 0.393314, -19.018282));
+	Entity* ramp = glo::entity->add(glm::vec3(-10.001070, 0.393314, -19.018282));
 	ramp->add(Component::MODEL);
 	ramp->model.mdl = mdl_ramp;
 	ramp->model.shd = basic3d;
 	ramp->add(Component::RAMP);
 	ramp->sub(Event::EVENT_TOGGLE_RAMP);
 
-	Entity* ramp_base = glo::wctx.entity.add(glm::vec3(-10.001070, 0.393314, -19.018282));
+	Entity* ramp_base = glo::entity->add(glm::vec3(-10.001070, 0.393314, -19.018282));
 	ramp_base->add(Component::MODEL);
 	ramp_base->model.mdl = mdl_ramp_base;
 	ramp_base->model.shd = basic3d;
 
-	Entity* parking = glo::wctx.entity.add(glm::vec3(0, 0, 0));
+	Entity* parking = glo::entity->add(glm::vec3(0, 0, 0));
 	parking->add(Component::MODEL);
 	parking->model.mdl = mdl_parking;
 	parking->model.shd = basic3d;
-	parking->model.mdl->meshes[2].material.emission_map = tex_dynamic;
+	parking->model.mdl->meshes[2].material.emission_map = tex_screen_framebuffer;
 	parking->add(Component::AUDIO);
 	parking->audio.play("ambient.ogg", true);
 
-	Entity* house_window = glo::wctx.entity.add(glm::vec3(-8.4, 2.1, -21.3));
+	Entity* house_window = glo::entity->add(glm::vec3(-8.4, 2.1, -21.3));
 	house_window->add(Component::MODEL);
 	house_window->model.mdl = mdl_house_window;
 	house_window->model.shd = basic3d;
 	house_window->model.transparent = true;
 
-	Entity* cam_free = glo::wctx.entity.add(glm::vec3(-3, 6, 3));
+	Entity* cam_free = glo::entity->add(glm::vec3(-3, 6, 3));
 	cam_free->add(Component::CAM);
 	cam_free->cam = CCam(CCam::FREE, true);
 	cam_free->add(Component::LIGHT);
@@ -137,7 +172,7 @@ int main(int argc, char** argv) {
 	cam_free->light.light.apply_type_fields(basic3d);
 	cam_free->light.light.apply_active(basic3d, true);
 
-	Entity* cam1 = glo::wctx.entity.add(glm::vec3(13.987226, 14.390991, -5.179083));
+	Entity* cam1 = glo::entity->add(glm::vec3(13.987226, 14.390991, -5.179083));
 	cam1->ang = glm::vec3(138.399963, -41.799999, 0.000000);
 	cam1->add(Component::CAM);
 	cam1->cam = CCam(CCam::CCTV_SCANNER, false);
@@ -149,7 +184,7 @@ int main(int argc, char** argv) {
 	cam1->light.light.apply_type_fields(basic3d);
 	cam1->light.light.apply_active(basic3d, true);
 
-	Entity* cam2 = glo::wctx.entity.add(glm::vec3(-9.133455, 14.165318, 13.735492));
+	Entity* cam2 = glo::entity->add(glm::vec3(-9.133455, 14.165318, 13.735492));
 	cam2->ang = glm::vec3(-39.000072, -46.999989, 0.000000);
 	cam2->add(Component::CAM);
 	cam2->cam = CCam(CCam::CCTV_SCANNER, false);
@@ -162,12 +197,12 @@ int main(int argc, char** argv) {
 	cam2->light.light.apply_type_fields(basic3d);
 	cam2->light.light.apply_active(basic3d, true);
 
-	Entity* cam3 = glo::wctx.entity.add(glm::vec3(8.630467, 43.472813, 9.658076));
+	Entity* cam3 = glo::entity->add(glm::vec3(8.630467, 43.472813, 9.658076));
 	cam3->ang = glm::vec3(00.0f, -89.000000, 0.000000);
 	cam3->add(Component::CAM);
 	cam3->cam = CCam(CCam::CCTV_TOPDOWN, false);
 
-	Entity* cam4 = glo::wctx.entity.add(glm::vec3(-3.198956, 4.919804, -23.898209));
+	Entity* cam4 = glo::entity->add(glm::vec3(-3.198956, 4.919804, -23.898209));
 	cam4->ang = glm::vec3(140.599930, -36.199982, 0.000000);
 	cam4->add(Component::CAM);
 	cam4->cam = CCam(CCam::CCTV_STATIONARY, false);
@@ -182,101 +217,93 @@ int main(int argc, char** argv) {
 	cam4->add(Component::AUDIO);
 	cam4->audio.play_3d("light_buzz.ogg", cam4->pos, true);
 
-	Entity* cam5 = glo::wctx.entity.add(glm::vec3(-4.666153, 3.037676, -20.620951));
+	Entity* cam5 = glo::entity->add(glm::vec3(-4.666153, 3.037676, -20.620951));
 	cam5->ang = glm::vec3(180, -20, 0);
 	cam5->add(Component::CAM);
 	cam5->cam = CCam(CCam::FREE_STATIONARY, false);
 
-	Entity* mini_screen = glo::wctx.entity.add(cam5->pos + glm::vec3(-0.5, -0.85, 0));
+	Entity* mini_screen = glo::entity->add(cam5->pos + glm::vec3(-0.5, -0.85, 0));
 	mini_screen->ang.z = 0;
 	mini_screen->add(Component::MODEL);
 	mini_screen->model.mdl = mdl_mini_screen;
 	mini_screen->model.shd = basic3d;
 	mini_screen->add(Component::MINISCREEN);
 
-	Entity* human = glo::wctx.entity.add(cam5->pos + glm::vec3(0.5, -2.0, -0));
+	Entity* human = glo::entity->add(cam5->pos + glm::vec3(0.5, -2.0, -0));
 	human->add(Component::MODEL);
 	human->model.mdl = mdl_human;
 	human->model.shd = basic3d;
 
-	Entity* chair = glo::wctx.entity.add(cam5->pos + glm::vec3(0.5, -2.0, -0));
+	Entity* chair = glo::entity->add(cam5->pos + glm::vec3(0.5, -2.0, -0));
 	chair->add(Component::MODEL);
 	chair->model.mdl = mdl_chair;
 	chair->model.shd = basic3d;
 
-	glo::game.parking_spots[0].pos = glm::vec3(13.286233, 0, 0.556348);
-	glo::game.parking_spots[1].pos = glm::vec3(13.286233, 0, 8.956244);
-	glo::game.parking_spots[2].pos = glm::vec3(13.286233, 0, 17.510393);
-	glo::game.parking_spots[3].pos = glm::vec3(5.080829, 0, 0.556348);
-	glo::game.parking_spots[4].pos = glm::vec3(5.080829, 0, 8.956244);
-	glo::game.parking_spots[5].pos = glm::vec3(5.080829, 0, 17.510393);
-
+	glo::game->parking_spots[0].pos = glm::vec3(13.286233, 0, 0.556348);
+	glo::game->parking_spots[1].pos = glm::vec3(13.286233, 0, 8.956244);
+	glo::game->parking_spots[2].pos = glm::vec3(13.286233, 0, 17.510393);
+	glo::game->parking_spots[3].pos = glm::vec3(5.080829, 0, 0.556348);
+	glo::game->parking_spots[4].pos = glm::vec3(5.080829, 0, 8.956244);
+	glo::game->parking_spots[5].pos = glm::vec3(5.080829, 0, 17.510393);
 	int point_lights_count = 0;
 	int spot_lights_count = 0;
-
-	glo::game.set_cam(1);
-
-	Texture* tex_map = glo::wctx.resmng.load_tex("tex_map.png", 5);
-	Texture* tex_crosshair = glo::wctx.resmng.load_tex("tex_crosshair.png");
-	Texture* tex_pixel = glo::wctx.resmng.load_tex("tex_pixel.png");
-	Texture* tex_parking_2d = glo::wctx.resmng.load_tex("tex_parking_2d.png");
-	Mesh2D mdl_2d(Mesh2D::SQUARE);
-	Mesh2D mdl_2d_circle(Mesh2D::CIRCLE);
 
 	Hud hud(&mdl_2d, tex_map);
 	Parking2D parking2d(&mdl_2d, &mdl_2d_circle, tex_pixel, tex_parking_2d);
 
-	while (!glfwWindowShouldClose(glo::wctx.win)) {
+	glo::game->set_cam(1);
+
+	while (!glfwWindowShouldClose(glo::wctx->win)) {
 		glfwPollEvents();
 		
-		if (glo::game.lock_cursor) {
-			glfwSetInputMode(glo::wctx.win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		if (glo::game->lock_cursor) {
+			glfwSetInputMode(glo::wctx->win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 		else {
-			glfwSetInputMode(glo::wctx.win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetInputMode(glo::wctx->win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 
-		glo::wctx.input.update(glo::wctx.win);
+		glo::input->update(glo::wctx->win);
 
 		if (cam5->ang.y < -54) {
-			glo::game.open_cam();
+			glo::game->open_cam();
 		}
 
-		human->model.visible = glo::game._cam_index != 5;
+		human->model.visible = glo::game->_cam_index != 5;
 
-		if (glo::wctx.input.press(GLFW_KEY_SPACE)) {
-			bool is_in_camera_mode = glo::game._cam_index >= 1 && glo::game._cam_index <= 4;
+		if (glo::input->press(GLFW_KEY_SPACE)) {
+			bool is_in_camera_mode = glo::game->_cam_index >= 1 && glo::game->_cam_index <= 4;
 			if (is_in_camera_mode) {
-				glo::game.close_cam();
+				glo::game->close_cam();
 			}
 			else {
-				glo::game.open_cam();
+				glo::game->open_cam();
 			}
 		}
 
-		if (glo::wctx.input.press(GLFW_KEY_N)) {
-			glo::wctx.cars_transparent_2d = true;
+		if (glo::input->press(GLFW_KEY_N)) {
+			glo::wctx->cars_transparent_2d = true;
 		}
-		if (glo::wctx.input.press(GLFW_KEY_B)) {
-			glo::wctx.cars_transparent_2d = false;
+		if (glo::input->press(GLFW_KEY_B)) {
+			glo::wctx->cars_transparent_2d = false;
 		}
-		if (glo::wctx.input.press(GLFW_KEY_COMMA)) {
-			glo::wctx.event.pub(Event::EVENT_TOGGLE_RAMP);
+		if (glo::input->press(GLFW_KEY_COMMA)) {
+			glo::event->pub(Event::EVENT_TOGGLE_RAMP);
 		}
-		if (glo::wctx.input.press(GLFW_KEY_PERIOD)) {
-			glo::wctx.event.pub(Event::EVENT_TOGGLE_HOUSE_LIGHT);
+		if (glo::input->press(GLFW_KEY_PERIOD)) {
+			glo::event->pub(Event::EVENT_TOGGLE_HOUSE_LIGHT);
 		}
-		if (glo::wctx.input.press(GLFW_KEY_N)) {
-			glo::game.set_cam(glo::game._cam_index - 1);
+		if (glo::input->press(GLFW_KEY_N)) {
+			glo::game->set_cam(glo::game->_cam_index - 1);
 		}
-		if (glo::wctx.input.press(GLFW_KEY_M)) {
-			glo::game.set_cam(glo::game._cam_index + 1);
+		if (glo::input->press(GLFW_KEY_M)) {
+			glo::game->set_cam(glo::game->_cam_index + 1);
 		}
 
-		Input& input = glo::wctx.input;
+		Input& input = *glo::input;
 		for (int i = 0; i < 6; i++) {
 			Entity* car = nullptr;
-			for (Entity* e : glo::wctx.entity.arr) {
+			for (Entity* e : glo::entity->arr) {
 				if (e->has(Component::CAR) && e->car.spot_index == i) {
 					car = e;
 					break;
@@ -285,13 +312,13 @@ int main(int argc, char** argv) {
 
 			if (input.press(GLFW_KEY_1 + i)) {
 				if (input.down(GLFW_KEY_LEFT_CONTROL) && car != nullptr) {
-					glo::wctx.entity.destroy(car);
+					glo::entity->destroy(car);
 				}
 				else if (input.down(GLFW_KEY_LEFT_SHIFT) && car != nullptr) {
 					car->car.time_left = 20 * 60;
 				}
 				else if (car == nullptr) {
-					car = glo::wctx.entity.add({ -15.601791, 0, -41.797455 });
+					car = glo::entity->add({ -15.601791, 0, -41.797455 });
 					car->add(Component::MODEL);
 					car->model.mdl = mdl_car;
 					car->model.shd = basic3d;
@@ -306,39 +333,39 @@ int main(int argc, char** argv) {
 		float dz = input.down(GLFW_KEY_B) - input.down(GLFW_KEY_N);
 		house_window->pos += glm::vec3(dx, dy, dz);
 
-		if (glo::wctx.input.press(GLFW_KEY_ESCAPE)) {
-			glfwSetWindowShouldClose(glo::wctx.win, GLFW_TRUE);
+		if (glo::input->press(GLFW_KEY_ESCAPE)) {
+			glfwSetWindowShouldClose(glo::wctx->win, GLFW_TRUE);
 		}
 
-		if (glo::wctx.input.press(GLFW_KEY_F1)) {
-			glo::wctx.wireframe ^= true;
-			int m = glo::wctx.wireframe ? GL_LINE : GL_FILL;
+		if (glo::input->press(GLFW_KEY_F1)) {
+			glo::wctx->wireframe ^= true;
+			int m = glo::wctx->wireframe ? GL_LINE : GL_FILL;
 			glPolygonMode(GL_FRONT_AND_BACK, m);
 		}
 
-		if (glo::wctx.input.press(GLFW_KEY_F2)) {
-			glo::wctx.shaded ^= true;
-			basic3d->set_int("u_unlit", !glo::wctx.shaded);
+		if (glo::input->press(GLFW_KEY_F2)) {
+			glo::wctx->shaded ^= true;
+			basic3d->set_int("u_unlit", !glo::wctx->shaded);
 		}
 
-		Camera& cam = glo::wctx.cam;
+		Camera& cam = *glo::cam;
 		cam.update_proj();
-		glm::mat4 VP = glo::wctx.cam.proj * glo::wctx.cam.view();
+		glm::mat4 VP = glo::cam->proj * glo::cam->view();
 		basic3d->set_mat4("VP", &VP[0][0]);
 		cam_free->light.light.apply_position(basic3d, cam_free->pos);
 		basic3d->set_vec3("viewPos", cam.pos.x, cam.pos.y, cam.pos.z);
 
-		glo::wctx.audio.update_3d_listener(cam.pos, cam.pos + cam.front, cam.up);
+		glo::audio->update_3d_listener(cam.pos, cam.pos + cam.front, cam.up);
 
-		if (glo::wctx.input.press(GLFW_KEY_Z)) {
-			for (int i = 0; i < glo::wctx.entity.size(); i++) {
-				Entity* e = glo::wctx.entity.arr[i];
+		if (glo::input->press(GLFW_KEY_Z)) {
+			for (int i = 0; i < glo::entity->size(); i++) {
+				Entity* e = glo::entity->arr[i];
 				printf("%d [%f %f %f]  [%f %f %f]\n", i, e->pos.x, e->pos.y, e->pos.z, e->ang.x, e->ang.y, e->ang.z);
 			}
 		}
 
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
-			Entity* e = glo::wctx.entity.arr[i];
+		for (int i = 0; i < glo::entity->size(); i++) {
+			Entity* e = glo::entity->arr[i];
 			if (e->has(Component::RAMP)) {
 				e->ramp.update(e);
 			}
@@ -346,8 +373,8 @@ int main(int argc, char** argv) {
 
 		point_lights_count = 0;
 		spot_lights_count = 0;
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
-			Entity* e = glo::wctx.entity.arr[i];
+		for (int i = 0; i < glo::entity->size(); i++) {
+			Entity* e = glo::entity->arr[i];
 			if (e->has(Component::LIGHT)) {
 				e->light.update_and_apply_position(e);
 
@@ -358,30 +385,30 @@ int main(int argc, char** argv) {
 		basic3d->set_int("pointLights_count", point_lights_count);
 		basic3d->set_int("spotLights_count", spot_lights_count);
 
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
-			Entity* e = glo::wctx.entity.arr[i];
+		for (int i = 0; i < glo::entity->size(); i++) {
+			Entity* e = glo::entity->arr[i];
 			if (e->has(Component::CAM)) {
 				e->cam.update(e);
 				e->cam.update_lights(e, basic3d);
 			}
 		}
 
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
-			Entity* e = glo::wctx.entity.arr[i];
+		for (int i = 0; i < glo::entity->size(); i++) {
+			Entity* e = glo::entity->arr[i];
 			if (e->has(Component::BUTTON)) {
 				e->button.update(e);
 			}
 		}
 
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
-			Entity* e = glo::wctx.entity.arr[i];
+		for (int i = 0; i < glo::entity->size(); i++) {
+			Entity* e = glo::entity->arr[i];
 			if (e->has(Component::CAR)) {
 				e->car.update(e);
 			}
 		}
 
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
-			Entity* e = glo::wctx.entity.arr[i];
+		for (int i = 0; i < glo::entity->size(); i++) {
+			Entity* e = glo::entity->arr[i];
 			if (e->has(Component::MINISCREEN)) {
 				e->miniscreen.update(e);
 			}
@@ -389,14 +416,14 @@ int main(int argc, char** argv) {
 
 		hud.update();
 
-		for (int i = 0; i < glo::wctx.entity.size(); i++) {
-			Entity* e = glo::wctx.entity.arr[i];
+		for (int i = 0; i < glo::entity->size(); i++) {
+			Entity* e = glo::entity->arr[i];
 			e->check_ev();
 		}
-		glo::wctx.event.consume();
-		glo::game.update_noise();
+		glo::event->consume();
+		glo::game->update_noise();
 
-		glo::wctx.entity.purge_destroyed();
+		glo::entity->purge_destroyed();
 
 		//---------------------------------------------------------------------------------------------
 		// Render
@@ -411,16 +438,16 @@ int main(int argc, char** argv) {
 		glEnable(GL_DEPTH_TEST);
 		{
 			int w, h;
-			glfwGetWindowSize(glo::wctx.win, &w, &h);
+			glfwGetWindowSize(glo::wctx->win, &w, &h);
 			glViewport(0, 0, w, h);
 		}
 
 
-		basic3d->set_int("u_noise_seed", glo::game.noise.rand);
-		basic3d->set_float("u_noise_intensity", glo::game.noise.intensity);
-		basic3d->set_float("u_noise_seizure", glo::game.noise.seizure);
+		basic3d->set_int("u_noise_seed", glo::game->noise.rand);
+		basic3d->set_float("u_noise_intensity", glo::game->noise.intensity);
+		basic3d->set_float("u_noise_seizure", glo::game->noise.seizure);
 	
-		std::vector<Entity*> entities_sorted = glo::wctx.entity.arr;
+		std::vector<Entity*> entities_sorted = glo::entity->arr;
 		std::sort(entities_sorted.begin(), entities_sorted.end(), [&cam](Entity* a, Entity* b) {
 			int at = a->model.transparent;
 			int bt = b->model.transparent;
@@ -454,12 +481,12 @@ int main(int argc, char** argv) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		int w, h;
-		glfwGetWindowSize(glo::wctx.win, &w, &h);
+		glfwGetWindowSize(glo::wctx->win, &w, &h);
 		glViewport(0, 0, w, h);
 		glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
 
 		hud.draw(basic2d);
-		if (glo::game.lock_cursor) {
+		if (glo::game->lock_cursor) {
 			basic2d->set_mat4("u_proj", &proj[0][0]);
 			basic2d->set_vec2("u_pos", w / 2, h / 2);
 			basic2d->set_vec2("u_scale", tex_crosshair->w, tex_crosshair->h);
@@ -468,14 +495,14 @@ int main(int argc, char** argv) {
 		}
 
 		{
-			Texture* tex_watermark = glo::wctx.resmng.load_tex("tex_watermark.png");
+			Texture* tex_watermark = glo::resmng->load_tex("tex_watermark.png");
 			basic2d->set_vec2("u_pos", 0, h - tex_watermark->h);
 			basic2d->set_vec2("u_scale", tex_watermark->w, tex_watermark->h);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_watermark);
 		}
 
-		glfwSwapBuffers(glo::wctx.win);
+		glfwSwapBuffers(glo::wctx->win);
 	}
 
 	return 0;
