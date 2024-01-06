@@ -1,10 +1,10 @@
 #include "parking2d.h"
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include "entity/entitymng.h"
 #include "rend/color.h"
-#include "ctx/winctx.h"
+
+#include "subsystem/subsystem_entity.h"
+#include "subsystem/subsystem_window.h"
 
 Entity* get_car(int spot_index) {
 	Entity* car = nullptr;
@@ -66,7 +66,7 @@ void Parking2D::draw(Shader* shd) {
 			float progress = car->car.time_left / (20 * 60.0f); // TODO: Magic constant.
 
 			Color car_rect_color = car->car.color;
-			car_rect_color.a = glo::wctx->cars_transparent_2d ? 0.5 : 1;
+			car_rect_color.a = glo::win->cars_transparent_2d ? 0.5 : 1;
 
 			draw_rect(rect_x, rect_y, rect_w, rect_h, car_rect_color, mesh_2d, shd, tex_pixel);
 			draw_rect(rect_x, rect_y - 16, rect_w * progress, 12, Color(0, 1, 0.45), mesh_2d, shd, tex_pixel);

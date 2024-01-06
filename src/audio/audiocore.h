@@ -13,7 +13,3 @@ struct AudioCore {
 	void stop(AudioHandle handle);
 	void update_3d_listener(glm::vec3 pos, glm::vec3 at, glm::vec3 up);
 };
-
-namespace glo {
-	extern AudioCore* audio;
-}

@@ -13,7 +13,3 @@ struct EventMng {
 	void consume();
 	void pub(Event ev);
 };
-
-namespace glo {
-	extern EventMng* event;
-}

@@ -9,7 +9,3 @@ void EventMng::consume() {
 void EventMng::pub(Event e) {
 	active[e] = true;
 }
-
-namespace glo {
-	EventMng* event = nullptr;
-}

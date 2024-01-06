@@ -3,10 +3,6 @@
 
 #include "util/log.h"
 
-namespace glo {
-	ResMng* resmng = nullptr;
-}
-
 Texture* ResMng::load_tex(const std::string& fname, int frames) {
 	const std::string path = "assets/texture/" + fname;
 	auto it = tex.find(fname);

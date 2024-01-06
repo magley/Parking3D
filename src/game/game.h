@@ -22,7 +22,3 @@ struct Game {
 	void open_cam();
 	void close_cam();
 };
-
-namespace glo {
-	extern Game* game;
-}

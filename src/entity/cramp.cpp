@@ -1,8 +1,8 @@
 #include "cramp.h"
 
-#include "entity.h"
-#include "audio/audiocore.h"
-#include "resource/res_mng.h"
+#include "subsystem/subsystem_audio.h"
+#include "subsystem/subsystem_entity.h"
+#include "subsystem/subsystem_resource.h"
 
 void CRamp::update(Entity* self) {
 	const float RISE_SPEED = 90 / 60.0f;
@@ -38,5 +38,5 @@ void CRamp::toggle() {
 		state = RISE;
 	}
 
-	glo::audio->play(glo::resmng->load_wav("ramp.wav"));
+	glo::audio->play(glo::res->load_wav("ramp.wav"));
 }

@@ -12,14 +12,14 @@
 #include "2d/hud.h"
 #include "2d/parking2d.h"
 
-#include "ctx/winctx.h"
-#include "resource/res_mng.h"
-#include "rend/camera.h"
-#include "entity/entitymng.h"
-#include "game/game.h"
-#include "util/input.h"
-#include "entity/event.h"
-#include "audio/audiocore.h"
+#include "subsystem/subsystem_audio.h"
+#include "subsystem/subsystem_camera.h"
+#include "subsystem/subsystem_entity.h"
+#include "subsystem/subsystem_event.h"
+#include "subsystem/subsystem_game.h"
+#include "subsystem/subsystem_input.h"
+#include "subsystem/subsystem_resource.h"
+#include "subsystem/subsystem_window.h"
 
 #include "util/log.h"
 
@@ -54,7 +54,7 @@ void init_texture_framebuffer(int width, int height) {
 
 void on_framebuffer_resize() {
 	int width, height;
-	glfwGetWindowSize(glo::wctx->win, &width, &height);
+	glfwGetWindowSize(glo::win->win, &width, &height);
 	glViewport(0, 0, width, height);
 }
 
@@ -66,22 +66,22 @@ int main(int argc, char** argv) {
 	// Initialize engine subsystems.
 
 	log("Initializing engine subsystems...");
-	glo::wctx = new WinCtx();
+	glo::win = new WinCtx();
 	glo::audio = new AudioCore();
 	glo::cam = new Camera();
 	glo::entity = new EntityMng();
 	glo::event = new EventMng();
 	glo::game = new Game();
 	glo::input = new Input();
-	glo::resmng = new ResMng();
+	glo::res = new ResMng();
 
 	// Initialize OpenGL and the window context.
 
 	log("Creating a window...");
 	glfwInit();
-	glo::wctx->win = glfwCreateWindow(1280, 720, "Parking3D", nullptr, nullptr);
-	glfwMakeContextCurrent(glo::wctx->win);
-	glfwSetFramebufferSizeCallback(glo::wctx->win, framebuffer_size_callback);
+	glo::win->win = glfwCreateWindow(1280, 720, "Parking3D", nullptr, nullptr);
+	glfwMakeContextCurrent(glo::win->win);
+	glfwSetFramebufferSizeCallback(glo::win->win, framebuffer_size_callback);
 	glfwSwapInterval(1);
 	log("Initializing the OpenGL context...");
 	glewInit();
@@ -95,22 +95,22 @@ int main(int argc, char** argv) {
 	// Entities.
 
 	log("Loading resources...");
-	Model* mdl_car = glo::resmng->load_mdl("car.obj");
-	Model* mdl_button = glo::resmng->load_mdl("sphere.obj");
-	Model* mdl_ramp = glo::resmng->load_mdl("ramp.obj");
-	Model* mdl_parking = glo::resmng->load_mdl("parking.obj");
-	Model* mdl_house_window = glo::resmng->load_mdl("window.obj");
-	Model* mdl_mini_screen = glo::resmng->load_mdl("mini_screen.obj");
-	Model* mdl_human = glo::resmng->load_mdl("human_sitting.obj");
-	Model* mdl_chair = glo::resmng->load_mdl("chair.obj");
-	Model* mdl_ramp_base = glo::resmng->load_mdl("ramp_base.obj");
-	Shader* basic3d = glo::resmng->load_shd("basic3d");
-	Shader* basic2d = glo::resmng->load_shd("basic2d");
+	Model* mdl_car = glo::res->load_mdl("car.obj");
+	Model* mdl_button = glo::res->load_mdl("sphere.obj");
+	Model* mdl_ramp = glo::res->load_mdl("ramp.obj");
+	Model* mdl_parking = glo::res->load_mdl("parking.obj");
+	Model* mdl_house_window = glo::res->load_mdl("window.obj");
+	Model* mdl_mini_screen = glo::res->load_mdl("mini_screen.obj");
+	Model* mdl_human = glo::res->load_mdl("human_sitting.obj");
+	Model* mdl_chair = glo::res->load_mdl("chair.obj");
+	Model* mdl_ramp_base = glo::res->load_mdl("ramp_base.obj");
+	Shader* basic3d = glo::res->load_shd("basic3d");
+	Shader* basic2d = glo::res->load_shd("basic2d");
 	Texture* tex_screen_framebuffer = new Texture(texture, 800, 600);
-	Texture* tex_map = glo::resmng->load_tex("tex_map.png", 5);
-	Texture* tex_crosshair = glo::resmng->load_tex("tex_crosshair.png");
-	Texture* tex_pixel = glo::resmng->load_tex("tex_pixel.png");
-	Texture* tex_parking_2d = glo::resmng->load_tex("tex_parking_2d.png");
+	Texture* tex_map = glo::res->load_tex("tex_map.png", 5);
+	Texture* tex_crosshair = glo::res->load_tex("tex_crosshair.png");
+	Texture* tex_pixel = glo::res->load_tex("tex_pixel.png");
+	Texture* tex_parking_2d = glo::res->load_tex("tex_parking_2d.png");
 	Mesh2D mdl_2d(Mesh2D::SQUARE);
 	Mesh2D mdl_2d_circle(Mesh2D::CIRCLE);
 
@@ -253,17 +253,17 @@ int main(int argc, char** argv) {
 
 	glo::game->set_cam(1);
 
-	while (!glfwWindowShouldClose(glo::wctx->win)) {
+	while (!glfwWindowShouldClose(glo::win->win)) {
 		glfwPollEvents();
 		
 		if (glo::game->lock_cursor) {
-			glfwSetInputMode(glo::wctx->win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			glfwSetInputMode(glo::win->win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 		else {
-			glfwSetInputMode(glo::wctx->win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetInputMode(glo::win->win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 
-		glo::input->update(glo::wctx->win);
+		glo::input->update(glo::win->win);
 
 		if (cam5->ang.y < -54) {
 			glo::game->open_cam();
@@ -282,10 +282,10 @@ int main(int argc, char** argv) {
 		}
 
 		if (glo::input->press(GLFW_KEY_N)) {
-			glo::wctx->cars_transparent_2d = true;
+			glo::win->cars_transparent_2d = true;
 		}
 		if (glo::input->press(GLFW_KEY_B)) {
-			glo::wctx->cars_transparent_2d = false;
+			glo::win->cars_transparent_2d = false;
 		}
 		if (glo::input->press(GLFW_KEY_COMMA)) {
 			glo::event->pub(Event::EVENT_TOGGLE_RAMP);
@@ -334,18 +334,18 @@ int main(int argc, char** argv) {
 		house_window->pos += glm::vec3(dx, dy, dz);
 
 		if (glo::input->press(GLFW_KEY_ESCAPE)) {
-			glfwSetWindowShouldClose(glo::wctx->win, GLFW_TRUE);
+			glfwSetWindowShouldClose(glo::win->win, GLFW_TRUE);
 		}
 
 		if (glo::input->press(GLFW_KEY_F1)) {
-			glo::wctx->wireframe ^= true;
-			int m = glo::wctx->wireframe ? GL_LINE : GL_FILL;
+			glo::win->wireframe ^= true;
+			int m = glo::win->wireframe ? GL_LINE : GL_FILL;
 			glPolygonMode(GL_FRONT_AND_BACK, m);
 		}
 
 		if (glo::input->press(GLFW_KEY_F2)) {
-			glo::wctx->shaded ^= true;
-			basic3d->set_int("u_unlit", !glo::wctx->shaded);
+			glo::win->shaded ^= true;
+			basic3d->set_int("u_unlit", !glo::win->shaded);
 		}
 
 		Camera& cam = *glo::cam;
@@ -438,7 +438,7 @@ int main(int argc, char** argv) {
 		glEnable(GL_DEPTH_TEST);
 		{
 			int w, h;
-			glfwGetWindowSize(glo::wctx->win, &w, &h);
+			glfwGetWindowSize(glo::win->win, &w, &h);
 			glViewport(0, 0, w, h);
 		}
 
@@ -481,7 +481,7 @@ int main(int argc, char** argv) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		int w, h;
-		glfwGetWindowSize(glo::wctx->win, &w, &h);
+		glfwGetWindowSize(glo::win->win, &w, &h);
 		glViewport(0, 0, w, h);
 		glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
 
@@ -495,14 +495,14 @@ int main(int argc, char** argv) {
 		}
 
 		{
-			Texture* tex_watermark = glo::resmng->load_tex("tex_watermark.png");
+			Texture* tex_watermark = glo::res->load_tex("tex_watermark.png");
 			basic2d->set_vec2("u_pos", 0, h - tex_watermark->h);
 			basic2d->set_vec2("u_scale", tex_watermark->w, tex_watermark->h);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_watermark);
 		}
 
-		glfwSwapBuffers(glo::wctx->win);
+		glfwSwapBuffers(glo::win->win);
 	}
 
 	return 0;

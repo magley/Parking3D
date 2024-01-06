@@ -1,9 +1,5 @@
 #include "entitymng.h"
 
-namespace glo {
-	EntityMng* entity = nullptr;
-}
-
 Entity* EntityMng::add(glm::vec3 pos) {
 	Entity* e = new Entity();
 	e->pos = pos;

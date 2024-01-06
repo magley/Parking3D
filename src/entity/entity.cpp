@@ -1,5 +1,6 @@
 #include "entity.h"
-#include "entity/event.h"
+
+#include "subsystem/subsystem_event.h"
 
 void Entity::check_ev() {
 	EventMng& evmng = *glo::event;

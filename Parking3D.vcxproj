@@ -103,7 +103,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -159,6 +159,14 @@
     <ClCompile Include="src\rend\shader.cpp" />
     <ClCompile Include="src\rend\texture.cpp" />
     <ClCompile Include="src\resource\res_mng.cpp" />
+    <ClCompile Include="src\subsystem\subsystem_audio.cpp" />
+    <ClCompile Include="src\subsystem\subsystem_camera.cpp" />
+    <ClCompile Include="src\subsystem\subsystem_entity.cpp" />
+    <ClCompile Include="src\subsystem\subsystem_event.cpp" />
+    <ClCompile Include="src\subsystem\subsystem_game.cpp" />
+    <ClCompile Include="src\subsystem\subsystem_input.cpp" />
+    <ClCompile Include="src\subsystem\subsystem_resource.cpp" />
+    <ClCompile Include="src\subsystem\subsystem_window.cpp" />
     <ClCompile Include="src\util\input.cpp" />
     <ClCompile Include="src\util\log.cpp" />
   </ItemGroup>
@@ -202,6 +210,14 @@
     <ClInclude Include="src\rend\shader.h" />
     <ClInclude Include="src\rend\texture.h" />
     <ClInclude Include="src\resource\res_mng.h" />
+    <ClInclude Include="src\subsystem\subsystem_audio.h" />
+    <ClInclude Include="src\subsystem\subsystem_camera.h" />
+    <ClInclude Include="src\subsystem\subsystem_entity.h" />
+    <ClInclude Include="src\subsystem\subsystem_event.h" />
+    <ClInclude Include="src\subsystem\subsystem_game.h" />
+    <ClInclude Include="src\subsystem\subsystem_input.h" />
+    <ClInclude Include="src\subsystem\subsystem_resource.h" />
+    <ClInclude Include="src\subsystem\subsystem_window.h" />
     <ClInclude Include="src\util\fileutil.h" />
     <ClInclude Include="src\util\glutil.h" />
     <ClInclude Include="src\util\input.h" />

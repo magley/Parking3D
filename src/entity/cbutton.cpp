@@ -1,12 +1,12 @@
 #include "cbutton.h"
 
-#include "entity/event.h"
-#include "entity/entitymng.h"
-#include "audio/audiocore.h"
-#include "resource/res_mng.h"
-#include "ctx/winctx.h"
-#include "util/input.h"
-#include "rend/camera.h"
+#include "subsystem/subsystem_audio.h"
+#include "subsystem/subsystem_camera.h"
+#include "subsystem/subsystem_entity.h"
+#include "subsystem/subsystem_event.h"
+#include "subsystem/subsystem_input.h"
+#include "subsystem/subsystem_resource.h"
+#include "subsystem/subsystem_window.h"
 
 CButton::CButton() {}
 
@@ -22,12 +22,12 @@ void CButton::update(Entity* self) {
 	}
 
 	glo::event->pub(ev);
-	glo::audio->play(glo::resmng->load_wav("button1.wav"));
+	glo::audio->play(glo::res->load_wav("button1.wav"));
 }
 
 glm::vec3 screen_coords_raycast(double xpos, double ypos, glm::mat4 view, glm::mat4 projection) {
 	int winw, winh;
-	glfwGetWindowSize(glo::wctx->win, &winw, &winh);
+	glfwGetWindowSize(glo::win->win, &winw, &winh);
 	float x = (2.0f * xpos) / winw - 1.0f;
 	float y = 1.0f - (2.0f * ypos) / winh;
 	float z = 1.0f;

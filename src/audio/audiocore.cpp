@@ -30,7 +30,3 @@ void AudioCore::pause(AudioHandle handle, bool pause) {
 void AudioCore::stop(AudioHandle handle) {
 	core.stop(handle.handle);
 }
-
-namespace glo {
-	AudioCore* audio = nullptr;
-}

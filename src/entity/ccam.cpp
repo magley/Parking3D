@@ -1,10 +1,9 @@
 #include "ccam.h"
 
 #include "rend/shader.h"
-#include "entity/entitymng.h"
-#include "util/input.h"
-#include "rend/camera.h"
-
+#include "subsystem/subsystem_camera.h"
+#include "subsystem/subsystem_entity.h"
+#include "subsystem/subsystem_input.h"
 
 void CCam::update(Entity* self) {
 	switch (type) {

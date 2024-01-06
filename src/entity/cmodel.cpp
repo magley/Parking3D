@@ -1,7 +1,7 @@
 #include "cmodel.h"
 
-#include "entity.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "subsystem/subsystem_entity.h"
 
 void CModel::draw(Entity* self) {
 	if (!visible) {

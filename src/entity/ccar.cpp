@@ -1,7 +1,7 @@
 #include "ccar.h"
 
-#include "entity/entitymng.h"
-#include "game/game.h"
+#include "subsystem/subsystem_entity.h"
+#include "subsystem/subsystem_game.h"
 
 Entity* _get_ramp() {
 	Entity* ramp = nullptr;

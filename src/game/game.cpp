@@ -1,11 +1,8 @@
 #include "game.h"
-#include "entity/entitymng.h"
-#include "resource/res_mng.h"
-#include "audio/audiocore.h"
 
-namespace glo {
-	Game* game = nullptr;
-};
+#include "subsystem/subsystem_audio.h"
+#include "subsystem/subsystem_entity.h"
+#include "subsystem/subsystem_resource.h"
 
 void Game::set_cam(int index) {
 	int prev_cam_index = _cam_index;
@@ -42,7 +39,7 @@ void Game::set_cam(int index) {
 		noise.seizure_min = 0;
 		noise.intensity = 2.0;
 
-		WavSample* snd_cam_switch = glo::resmng->load_wav("cam_switch.wav");
+		WavSample* snd_cam_switch = glo::res->load_wav("cam_switch.wav");
 		glo::audio->play(snd_cam_switch);
 		if (prev_cam_index == 0 || prev_cam_index == 5) {
 			open_cam();

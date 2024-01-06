@@ -10,7 +10,3 @@ struct WinCtx {
 
 	WinCtx() {};
 };
-
-namespace glo {
-	extern WinCtx* wctx;
-}

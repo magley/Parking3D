@@ -1,10 +1,6 @@
 #include "input.h"
 #include "GLFW/glfw3.h"
 
-namespace glo {
-	Input* input = nullptr;
-}
-
 void Input::update(GLFWwindow* win) {
 	for (int i = 0; i < GLFW_KEY_LAST; i++) {
 		kb_prev[i] = kb_curr[i];

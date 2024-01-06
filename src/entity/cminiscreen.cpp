@@ -1,11 +1,11 @@
 #include "cminiscreen.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include "entity/entitymng.h"
-#include "game/game.h"
-#include "rend/camera.h"
-#include "resource/res_mng.h"
-#include "audio/audiocore.h"
+#include "subsystem/subsystem_audio.h"
+#include "subsystem/subsystem_camera.h"
+#include "subsystem/subsystem_entity.h"
+#include "subsystem/subsystem_game.h"
+#include "subsystem/subsystem_resource.h"
 
 void CMiniScreen::update(Entity* self) {
 	const float angle_raised = 0;
@@ -59,7 +59,7 @@ void CMiniScreen::update(Entity* self) {
 void CMiniScreen::raise(Entity* self) {
 	if (state == LOWERED) {
 		state = GO_UP;
-		glo::audio->play(glo::resmng->load_wav("cam_open.wav"));
+		glo::audio->play(glo::res->load_wav("cam_open.wav"));
 	}
 }
 
@@ -67,6 +67,6 @@ void CMiniScreen::lower(Entity* self) {
 	if (state == RAISED) {
 		state = GO_DOWN;
 		glo::game->set_cam(5);
-		glo::audio->play(glo::resmng->load_wav("cam_open.wav"));
+		glo::audio->play(glo::res->load_wav("cam_open.wav"));
 	}
 }
