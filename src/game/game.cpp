@@ -6,6 +6,7 @@ namespace glo {
 };
 
 void Game::set_cam(int index) {
+	int prev_cam_index = _cam_index;
 	_cam_index = index;
 
 	std::vector<int> cam_entity_index;
@@ -17,6 +18,12 @@ void Game::set_cam(int index) {
 	}
 
 	_cam_index %= cam_entity_index.size();
+	if (_cam_index < 0) {
+		_cam_index = cam_entity_index[cam_entity_index.size() - 1];
+	}
+	if (_cam_index > cam_entity_index.size() - 1) {
+		_cam_index = cam_entity_index[0];
+	}
 	int cam_entity_target_index = cam_entity_index[_cam_index];
 
 	for (int i = 0; i < cam_entity_index.size(); i++) {
@@ -35,9 +42,15 @@ void Game::set_cam(int index) {
 
 		WavSample* snd_cam_switch = glo::wctx.resmng.load_wav("cam_switch.wav");
 		glo::wctx.audio.play(snd_cam_switch);
+		if (prev_cam_index == 0 || prev_cam_index == 5) {
+			open_cam();
+		}
 	}
 	else {
 		noise.intensity = 0;
+		if (prev_cam_index != 0 && prev_cam_index != 5) {
+			close_cam();
+		}
 	}
 }
 

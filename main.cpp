@@ -74,6 +74,7 @@ int main(int argc, char** argv) {
 	Model* mdl_mini_screen = glo::wctx.resmng.load_mdl("mini_screen.obj");
 	Model* mdl_human = glo::wctx.resmng.load_mdl("human_sitting.obj");
 	Model* mdl_chair = glo::wctx.resmng.load_mdl("chair.obj");
+	Model* mdl_ramp_base = glo::wctx.resmng.load_mdl("ramp_base.obj");
 	Shader* basic3d = glo::wctx.resmng.load_shd("basic3d");
 	Shader* basic2d = glo::wctx.resmng.load_shd("basic2d");
 
@@ -99,12 +100,17 @@ int main(int argc, char** argv) {
 	btn_ramp->button = CButton(Event::EVENT_TOGGLE_RAMP, false);
 	btn_ramp->button.radius = 0.15f;
 
-	Entity* ramp = glo::wctx.entity.add(glm::vec3(-9.001070, 0.393314, -18.018282));
+	Entity* ramp = glo::wctx.entity.add(glm::vec3(-10.001070, 0.393314, -19.018282));
 	ramp->add(Component::MODEL);
 	ramp->model.mdl = mdl_ramp;
 	ramp->model.shd = basic3d;
 	ramp->add(Component::RAMP);
 	ramp->sub(Event::EVENT_TOGGLE_RAMP);
+
+	Entity* ramp_base = glo::wctx.entity.add(glm::vec3(-10.001070, 0.393314, -19.018282));
+	ramp_base->add(Component::MODEL);
+	ramp_base->model.mdl = mdl_ramp_base;
+	ramp_base->model.shd = basic3d;
 
 	Entity* parking = glo::wctx.entity.add(glm::vec3(0, 0, 0));
 	parking->add(Component::MODEL);
@@ -253,6 +259,18 @@ int main(int argc, char** argv) {
 		}
 		if (glo::wctx.input.press(GLFW_KEY_B)) {
 			glo::wctx.cars_transparent_2d = false;
+		}
+		if (glo::wctx.input.press(GLFW_KEY_COMMA)) {
+			glo::wctx.event.pub(Event::EVENT_TOGGLE_RAMP);
+		}
+		if (glo::wctx.input.press(GLFW_KEY_PERIOD)) {
+			glo::wctx.event.pub(Event::EVENT_TOGGLE_HOUSE_LIGHT);
+		}
+		if (glo::wctx.input.press(GLFW_KEY_N)) {
+			glo::game.set_cam(glo::game._cam_index - 1);
+		}
+		if (glo::wctx.input.press(GLFW_KEY_M)) {
+			glo::game.set_cam(glo::game._cam_index + 1);
 		}
 
 		Input& input = glo::wctx.input;
