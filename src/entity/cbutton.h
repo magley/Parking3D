@@ -5,8 +5,7 @@ struct Entity;
 
 struct CButton {
 	bool pushed = false;
-
-	Event ev;
+	Event ev = Event::EVENT_size;
 	float radius = 1.0f;
 
 	CButton();

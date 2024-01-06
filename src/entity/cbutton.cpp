@@ -25,7 +25,7 @@ void CButton::update(Entity* self) {
 	glo::audio->play(glo::res->load_wav("button1.wav"));
 }
 
-glm::vec3 screen_coords_raycast(double xpos, double ypos, glm::mat4 view, glm::mat4 projection) {
+glm::vec3 screen_coords_raycast(float xpos, float ypos, glm::mat4 view, glm::mat4 projection) {
 	int winw, winh;
 	glfwGetWindowSize(glo::win->win, &winw, &winh);
 	float x = (2.0f * xpos) / winw - 1.0f;

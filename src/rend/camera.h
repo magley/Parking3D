@@ -10,7 +10,7 @@ struct Camera {
 	float pitch = 0;
 
 	bool proj_is_perspective = true;
-	glm::mat4 proj;
+	glm::mat4 proj = glm::mat4(1.0f);
 
 	void update_proj();
 	glm::mat4 view() const;

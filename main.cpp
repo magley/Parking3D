@@ -111,6 +111,7 @@ int main(int argc, char** argv) {
 	Texture* tex_crosshair = glo::res->load_tex("tex_crosshair.png");
 	Texture* tex_pixel = glo::res->load_tex("tex_pixel.png");
 	Texture* tex_parking_2d = glo::res->load_tex("tex_parking_2d.png");
+	Texture* tex_help = glo::res->load_tex("tex_help.png");
 	Mesh2D mdl_2d(Mesh2D::SQUARE);
 	Mesh2D mdl_2d_circle(Mesh2D::CIRCLE);
 
@@ -167,25 +168,25 @@ int main(int argc, char** argv) {
 	cam_free->add(Component::LIGHT);
 	cam_free->light.shd = basic3d;
 	cam_free->light.light = Light(Light::POINT_LIGHT, "pointLights[0]", { 0.05, 0.05, 0.1 }, { 0.4, 0.5, 0.7 }, { 0.65, 0.65, 0.65 });
-	cam_free->light.light.pointlight = PointLight_Fields(1, 0.022, 0.0019);
+	cam_free->light.light.pointlight = PointLight_Fields(1.0f, 0.022f, 0.0019f);
 	cam_free->light.light.apply_colors(basic3d);
 	cam_free->light.light.apply_type_fields(basic3d);
 	cam_free->light.light.apply_active(basic3d, true);
 
-	Entity* cam1 = glo::entity->add(glm::vec3(13.987226, 14.390991, -5.179083));
-	cam1->ang = glm::vec3(138.399963, -41.799999, 0.000000);
+	Entity* cam1 = glo::entity->add(glm::vec3(13.987226f, 14.390991f, -5.179083f));
+	cam1->ang = glm::vec3(138.399963f, -41.799999f, 0.000000f);
 	cam1->add(Component::CAM);
 	cam1->cam = CCam(CCam::CCTV_SCANNER, false);
 	cam1->add(Component::LIGHT);
 	cam1->light.shd = basic3d;
 	cam1->light.light = Light(Light::SPOT_LIGHT, "spotLights[0]", { 0.016, 0.022, 0.022 }, glm::vec3({ 0.2f, 0.25f, 0.3f }) * 2.5f, { 0.45f, 0.45f, 0.45f });
-	cam1->light.light.spotlight = SpotLight_Fields({}, 6.0, 22.0);
+	cam1->light.light.spotlight = SpotLight_Fields({}, 6.0f, 22.0f);
 	cam1->light.light.apply_colors(basic3d);
 	cam1->light.light.apply_type_fields(basic3d);
 	cam1->light.light.apply_active(basic3d, true);
 
-	Entity* cam2 = glo::entity->add(glm::vec3(-9.133455, 14.165318, 13.735492));
-	cam2->ang = glm::vec3(-39.000072, -46.999989, 0.000000);
+	Entity* cam2 = glo::entity->add(glm::vec3(-9.133455f, 14.165318f, 13.735492f));
+	cam2->ang = glm::vec3(-39.0f, -47.0f, 0.0f);
 	cam2->add(Component::CAM);
 	cam2->cam = CCam(CCam::CCTV_SCANNER, false);
 	cam2->cam.timer = 45;
@@ -328,22 +329,22 @@ int main(int argc, char** argv) {
 			}
 		}
 
-		float dx = input.down(GLFW_KEY_T) - input.down(GLFW_KEY_Y);
-		float dy = input.down(GLFW_KEY_G) - input.down(GLFW_KEY_H);
-		float dz = input.down(GLFW_KEY_B) - input.down(GLFW_KEY_N);
+		float dx = (float)(input.down(GLFW_KEY_T) - input.down(GLFW_KEY_Y));
+		float dy = (float)(input.down(GLFW_KEY_G) - input.down(GLFW_KEY_H));
+		float dz = (float)(input.down(GLFW_KEY_B) - input.down(GLFW_KEY_N));
 		house_window->pos += glm::vec3(dx, dy, dz);
 
 		if (glo::input->press(GLFW_KEY_ESCAPE)) {
 			glfwSetWindowShouldClose(glo::win->win, GLFW_TRUE);
 		}
 
-		if (glo::input->press(GLFW_KEY_F1)) {
+		if (glo::input->press(GLFW_KEY_F2)) {
 			glo::win->wireframe ^= true;
 			int m = glo::win->wireframe ? GL_LINE : GL_FILL;
 			glPolygonMode(GL_FRONT_AND_BACK, m);
 		}
 
-		if (glo::input->press(GLFW_KEY_F2)) {
+		if (glo::input->press(GLFW_KEY_F3)) {
 			glo::win->shaded ^= true;
 			basic3d->set_int("u_unlit", !glo::win->shaded);
 		}
@@ -425,6 +426,20 @@ int main(int argc, char** argv) {
 
 		glo::entity->purge_destroyed();
 
+		if (hud.help_visible == 2) {
+			for (int i = 0; i < GLFW_KEY_LAST; i++) {
+				if (glo::input->down(i)) {
+					hud.help_visible = 0;
+				}
+			}
+			if (glo::input->mdown(GLFW_MOUSE_BUTTON_LEFT)) {
+				hud.help_visible = 0;
+			}
+		}
+		else {
+			hud.help_visible = glo::input->down(GLFW_KEY_F1) ? 1 : 0;
+		}
+
 		//---------------------------------------------------------------------------------------------
 		// Render
 		//---------------------------------------------------------------------------------------------
@@ -488,18 +503,27 @@ int main(int argc, char** argv) {
 		hud.draw(basic2d);
 		if (glo::game->lock_cursor) {
 			basic2d->set_mat4("u_proj", &proj[0][0]);
-			basic2d->set_vec2("u_pos", w / 2, h / 2);
-			basic2d->set_vec2("u_scale", tex_crosshair->w, tex_crosshair->h);
+			basic2d->set_vec2("u_pos", w / 2.0f, h / 2.0f);
+			basic2d->set_vec2("u_scale", (float)tex_crosshair->w, (float)tex_crosshair->h);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_crosshair);
 		}
 
 		{
 			Texture* tex_watermark = glo::res->load_tex("tex_watermark.png");
-			basic2d->set_vec2("u_pos", 0, h - tex_watermark->h);
-			basic2d->set_vec2("u_scale", tex_watermark->w, tex_watermark->h);
+			basic2d->set_vec2("u_pos", 0, (float)h - tex_watermark->h);
+			basic2d->set_vec2("u_scale", (float)tex_watermark->w, (float)tex_watermark->h);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_watermark);
+		}
+
+		if (hud.help_visible) {
+			int ww = glm::min(w, (int)tex_help->w);
+			int hh = glm::min(h, (int)tex_help->h);
+			basic2d->set_vec2("u_pos", ((float)w - ww) / 2.0f, ((float)h - hh) / 2.0f);
+			basic2d->set_vec2("u_scale", (float)ww, (float)hh);
+			basic2d->set_vec3("u_img_frame", 1, 1, 0);
+			mdl_2d.draw(basic2d, tex_help);
 		}
 
 		glfwSwapBuffers(glo::win->win);

@@ -69,7 +69,7 @@ void CCam::update_front_from_pitch_yaw(Entity* self) {
 }
 
 void CCam::_update_cctv_scanner(Entity* self) {
-	const int SWAYMAX = 40;
+	const float SWAYMAX = 40.0f;
 	const float SWAYSPD = 0.25f;
 	const int SWAYRESTTIMER = 90;
 

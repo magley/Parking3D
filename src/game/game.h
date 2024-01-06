@@ -10,12 +10,12 @@ struct Game {
 	struct {
 		int seizure_min = 10;
 		int seizure_max = 200;
-		float intensity = 0.1;
-		float seizure;
-		int rand;
+		float intensity = 0.1f;
+		float seizure = 0;
+		int rand = 0;
 	} noise;
 
-	ParkingSpot parking_spots[6];
+	ParkingSpot parking_spots[6] = {};
 
 	void set_cam(int index);
 	void update_noise();

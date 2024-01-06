@@ -59,11 +59,11 @@ void Game::update_noise() {
 	}
 
 	if (noise.intensity > 0.2) {
-		noise.intensity -= 0.04;
+		noise.intensity -= 0.04f;
 	}
 
 	noise.rand = rand() / 9;
-	noise.seizure = (rand() % (noise.seizure_min - noise.seizure_max)) + noise.seizure_min;
+	noise.seizure = (rand() % (noise.seizure_min - noise.seizure_max)) + (float)noise.seizure_min;
 }
 
 void Game::open_cam() {
