@@ -253,6 +253,7 @@ int main(int argc, char** argv) {
 	Parking2D parking2d(&mdl_2d, &mdl_2d_circle, tex_pixel, tex_parking_2d);
 
 	glo::game->set_cam(1);
+	glo::game->setup_cam_indices(0, 5);
 
 	while (!glfwWindowShouldClose(glo::win->win)) {
 		glfwPollEvents();
@@ -270,14 +271,13 @@ int main(int argc, char** argv) {
 			glo::game->open_cam();
 		}
 
-		human->model.visible = glo::game->_cam_index != 5;
+		human->model.visible = glo::game->curr_cam_index != glo::game->down_cam_index;
 
-		if (glo::input->press(GLFW_KEY_SPACE)) {
-			bool is_in_camera_mode = glo::game->_cam_index >= 1 && glo::game->_cam_index <= 4;
-			if (is_in_camera_mode) {
+		if (glo::input->press(GLFW_KEY_SPACE) && glo::game->allow_fun_cams) {
+			if (glo::game->is_cctv_cam(glo::game->curr_cam_index)) {
 				glo::game->close_cam();
 			}
-			else {
+			else if (glo::game->curr_cam_index == glo::game->down_cam_index) {
 				glo::game->open_cam();
 			}
 		}
@@ -295,10 +295,10 @@ int main(int argc, char** argv) {
 			glo::event->pub(Event::EVENT_TOGGLE_HOUSE_LIGHT);
 		}
 		if (glo::input->press(GLFW_KEY_N)) {
-			glo::game->set_cam(glo::game->_cam_index - 1);
+			glo::game->next_cam(true);
 		}
 		if (glo::input->press(GLFW_KEY_M)) {
-			glo::game->set_cam(glo::game->_cam_index + 1);
+			glo::game->next_cam(false);
 		}
 
 		Input& input = *glo::input;

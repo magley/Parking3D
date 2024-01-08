@@ -3,8 +3,17 @@
 #include <vector>
 #include "parking_spot.h"
 
+struct Entity;
+
 struct Game {
-	int _cam_index = 0;
+	int curr_cam_index;
+	int free_cam_index; // Readonly
+	int down_cam_index; // Readonly
+	bool allow_fun_cams = false;
+	void setup_cam_indices(int free_cam_index, int down_cam_index);
+	void next_cam(bool previous);
+	bool is_cctv_cam(int index);
+
 	bool lock_cursor = false;
 
 	struct {
@@ -21,4 +30,6 @@ struct Game {
 	void update_noise();
 	void open_cam();
 	void close_cam();
+private:
+	std::vector<Entity*> get_camera_entities();
 };

@@ -46,7 +46,7 @@ void CMiniScreen::update(Entity* self) {
 		break;
 	}
 
-	if (glo::game->_cam_index == 5) {
+	if (glo::game->curr_cam_index == glo::game->down_cam_index) {
 		self->pos = (float)0.4 * glo::cam->front;
 		self->pos += -0.7f * glo::cam->up;
 		self->pos += glo::cam->pos;
