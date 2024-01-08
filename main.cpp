@@ -95,23 +95,23 @@ int main(int argc, char** argv) {
 	// Entities.
 
 	log("Loading resources...");
-	Model* mdl_car = glo::res->load_mdl("car.obj");
-	Model* mdl_button = glo::res->load_mdl("sphere.obj");
-	Model* mdl_ramp = glo::res->load_mdl("ramp.obj");
-	Model* mdl_parking = glo::res->load_mdl("parking.obj");
-	Model* mdl_house_window = glo::res->load_mdl("window.obj");
-	Model* mdl_mini_screen = glo::res->load_mdl("mini_screen.obj");
-	Model* mdl_human = glo::res->load_mdl("human_sitting.obj");
-	Model* mdl_chair = glo::res->load_mdl("chair.obj");
-	Model* mdl_ramp_base = glo::res->load_mdl("ramp_base.obj");
-	Shader* basic3d = glo::res->load_shd("basic3d");
-	Shader* basic2d = glo::res->load_shd("basic2d");
+	Model* mdl_car                  = glo::res->load_mdl("car.obj");
+	Model* mdl_button               = glo::res->load_mdl("sphere.obj");
+	Model* mdl_ramp                 = glo::res->load_mdl("ramp.obj");
+	Model* mdl_parking              = glo::res->load_mdl("parking.obj");
+	Model* mdl_house_window         = glo::res->load_mdl("window.obj");
+	Model* mdl_mini_screen          = glo::res->load_mdl("mini_screen.obj");
+	Model* mdl_human                = glo::res->load_mdl("human_sitting.obj");
+	Model* mdl_chair                = glo::res->load_mdl("chair.obj");
+	Model* mdl_ramp_base            = glo::res->load_mdl("ramp_base.obj");
+	Shader* basic3d                 = glo::res->load_shd("basic3d");
+	Shader* basic2d                 = glo::res->load_shd("basic2d");
 	Texture* tex_screen_framebuffer = new Texture(texture, 800, 600);
-	Texture* tex_map = glo::res->load_tex("tex_map.png", 5);
-	Texture* tex_crosshair = glo::res->load_tex("tex_crosshair.png");
-	Texture* tex_pixel = glo::res->load_tex("tex_pixel.png");
-	Texture* tex_parking_2d = glo::res->load_tex("tex_parking_2d.png");
-	Texture* tex_help = glo::res->load_tex("tex_help.png");
+	Texture* tex_map                = glo::res->load_tex("tex_map.png", 5);
+	Texture* tex_crosshair          = glo::res->load_tex("tex_crosshair.png");
+	Texture* tex_pixel              = glo::res->load_tex("tex_pixel.png");
+	Texture* tex_parking_2d         = glo::res->load_tex("tex_parking_2d.png");
+	Texture* tex_help               = glo::res->load_tex("tex_help.png");
 	Mesh2D mdl_2d(Mesh2D::SQUARE);
 	Mesh2D mdl_2d_circle(Mesh2D::CIRCLE);
 
@@ -281,6 +281,9 @@ int main(int argc, char** argv) {
 				glo::game->open_cam();
 			}
 		}
+		if (glo::input->press(GLFW_KEY_BACKSPACE)) {
+			glo::game->allow_fun_cams ^= true;
+		}
 
 		if (glo::input->press(GLFW_KEY_N)) {
 			glo::win->cars_transparent_2d = true;
@@ -294,10 +297,10 @@ int main(int argc, char** argv) {
 		if (glo::input->press(GLFW_KEY_PERIOD)) {
 			glo::event->pub(Event::EVENT_TOGGLE_HOUSE_LIGHT);
 		}
-		if (glo::input->press(GLFW_KEY_N)) {
+		if (glo::input->press(GLFW_KEY_SEMICOLON)) {
 			glo::game->next_cam(true);
 		}
-		if (glo::input->press(GLFW_KEY_M)) {
+		if (glo::input->press(GLFW_KEY_APOSTROPHE)) {
 			glo::game->next_cam(false);
 		}
 

@@ -6,6 +6,7 @@
 #include "subsystem/subsystem_input.h"
 #include "subsystem/subsystem_resource.h"
 #include "subsystem/subsystem_window.h"
+#include "subsystem/subsystem_audio.h"
 
 Hud::Hud(Mesh2D* mesh2d, Texture* map_tex) {
 	mesh_2d = mesh2d;
@@ -39,14 +40,19 @@ void Hud::update() {
 				}
 			}
 
-			if (glo::game->allow_fun_cams && glo::game->is_cctv_cam(glo::game->curr_cam_index)) {
+			if (glo::game->is_cctv_cam(glo::game->curr_cam_index)) {
 				Texture* tex_cam_hud = glo::res->load_tex("tex_cam_hud.png");
 				float cam_toggle_x = (w - tex_cam_hud->w) / 2.0f;
 				float cam_toggle_y = (h - tex_cam_hud->h - 32.0f);
 
 				BBox bbox = BBox({ cam_toggle_x , cam_toggle_y }, { tex_cam_hud->w, tex_cam_hud->h });
 				if (bbox.contains(input.mp_curr)) {
-					glo::game->close_cam();
+					if (glo::game->allow_fun_cams) {
+						glo::game->close_cam();
+					}
+					else {
+						glo::audio->play(glo::res->load_wav("error.wav"));
+					}	
 				}
 			}
 		}
