@@ -140,7 +140,7 @@ vec3 calc_spot_light(SpotLight light) {
 }
 
 void main() {
-	vec3 final_col;
+	vec3 final_col = vec3(0, 0, 0);
 	vec4 tex_diffuse = texture(material0.diffuse_map, f_uv) * vec4(u_tint, 1);
 	vec4 tex_emission = texture(material0.emission_map, f_uv);
 
