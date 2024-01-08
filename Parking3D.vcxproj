@@ -150,6 +150,7 @@
     <ClCompile Include="src\2d\hud.cpp" />
     <ClCompile Include="src\entity\event.cpp" />
     <ClCompile Include="src\game\game.cpp" />
+    <ClCompile Include="src\level\level.cpp" />
     <ClCompile Include="src\rend\camera.cpp" />
     <ClCompile Include="src\rend\color.cpp" />
     <ClCompile Include="src\rend\light.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="src\game\game.h" />
     <ClInclude Include="src\game\parking_spot.h" />
     <ClInclude Include="src\2d\hud.h" />
+    <ClInclude Include="src\level\level.h" />
     <ClInclude Include="src\lib\stb_image.h" />
     <ClInclude Include="src\rend\camera.h" />
     <ClInclude Include="src\rend\color.h" />

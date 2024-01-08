@@ -46,4 +46,6 @@ struct Entity {
 	void unsub(Event ev) { event_sub[ev] = false; }
 	void check_ev();
 	void on_event(Event ev);
+
+	void update();
 };

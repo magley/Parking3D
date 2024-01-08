@@ -3,6 +3,10 @@
 #include "subsystem/subsystem_audio.h"
 #include "subsystem/subsystem_entity.h"
 #include "subsystem/subsystem_resource.h"
+#include "subsystem/subsystem_window.h"
+#include "subsystem/subsystem_input.h"
+#include "subsystem/subsystem_event.h"
+#include "level/level.h"
 
 void Game::setup_cam_indices(int free_cam_index, int down_cam_index) {
 	this->free_cam_index = free_cam_index;
@@ -81,65 +85,6 @@ bool Game::is_cctv_cam(int index) {
 	return index != free_cam_index && index != down_cam_index;
 }
 
-/*
-void Game::set_cam(int index) {
-	int prev_cam_index = _cam_index;
-	_cam_index = index;
-
-	std::vector<int> cam_entity_index;
-	for (int i = 0; i < glo::entity->size(); i++) {
-		Entity* e = glo::entity->arr[i];
-		if (e->has(Component::CAM)) {
-			cam_entity_index.push_back(i);
-		}
-	}
-
-	_cam_index %= cam_entity_index.size();
-	if (_cam_index < 0) {
-		_cam_index = cam_entity_index[cam_entity_index.size() - 1];
-	}
-	if (_cam_index > cam_entity_index.size() - 1) {
-		_cam_index = cam_entity_index[0];
-	}
-	if (!allow_fun_views) {
-		if (_cam_index == 0) {
-			_cam_index = 1;
-		}
-		if (_cam_index == 5) {
-			_cam_index = 4;
-		}
-	}
-	int cam_entity_target_index = cam_entity_index[_cam_index];
-
-	for (int i = 0; i < cam_entity_index.size(); i++) {
-		int index = cam_entity_index[i];
-		Entity* e = glo::entity->arr[index];
-		e->cam.active = (index == cam_entity_target_index);
-
-		if (e->cam.active == true) {
-			lock_cursor = e->cam.type == CCam::FREE || e->cam.type == CCam::FREE_STATIONARY;
-		}
-	}
-
-	if (_cam_index != 0 && _cam_index != 5) {
-		noise.seizure_min = 0;
-		noise.intensity = 2.0;
-
-		WavSample* snd_cam_switch = glo::res->load_wav("cam_switch.wav");
-		glo::audio->play(snd_cam_switch);
-		if (prev_cam_index == 0 || prev_cam_index == 5) {
-			open_cam();
-		}
-	}
-	else {
-		noise.intensity = 0;
-		if (prev_cam_index != 0 && prev_cam_index != 5) {
-			close_cam();
-		}
-	}
-}
-*/
-
 void Game::update_noise() {
 	if (noise.seizure_min < 50) {
 		noise.seizure_min += 1;
@@ -183,4 +128,93 @@ void Game::close_cam() {
 	}
 
 	mini_screen->miniscreen.lower(mini_screen);
+}
+
+void Game::update_mouse_freedom() {
+	if (lock_cursor) {
+		glfwSetInputMode(glo::win->win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+	else {
+		glfwSetInputMode(glo::win->win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+}
+
+void Game::update_game_inputs() {
+	if (glo::input->press(GLFW_KEY_SPACE) && allow_fun_cams) {
+		if (is_cctv_cam(curr_cam_index)) {
+			close_cam();
+		}
+		else if (curr_cam_index == down_cam_index) {
+			open_cam();
+		}
+	}
+	if (glo::input->press(GLFW_KEY_BACKSPACE)) {
+		allow_fun_cams ^= true;
+	}
+
+	if (glo::input->press(GLFW_KEY_N)) {
+		glo::win->cars_transparent_2d = true;
+	}
+
+	if (glo::input->press(GLFW_KEY_B)) {
+		glo::win->cars_transparent_2d = false;
+	}
+
+	if (glo::input->press(GLFW_KEY_COMMA)) {
+		glo::event->pub(Event::EVENT_TOGGLE_RAMP);
+	}
+
+	if (glo::input->press(GLFW_KEY_PERIOD)) {
+		glo::event->pub(Event::EVENT_TOGGLE_HOUSE_LIGHT);
+	}
+
+	if (glo::input->press(GLFW_KEY_SEMICOLON)) {
+		next_cam(true);
+	}
+
+	if (glo::input->press(GLFW_KEY_APOSTROPHE)) {
+		next_cam(false);
+	}
+
+	if (glo::input->press(GLFW_KEY_ESCAPE)) {
+		glfwSetWindowShouldClose(glo::win->win, GLFW_TRUE);
+	}
+
+	if (glo::input->press(GLFW_KEY_F2)) {
+		glo::win->wireframe ^= true;
+		int m = glo::win->wireframe ? GL_LINE : GL_FILL;
+		glPolygonMode(GL_FRONT_AND_BACK, m);
+	}
+
+	Shader* basic3d = glo::res->load_shd("basic3d");
+	if (glo::input->press(GLFW_KEY_F3)) {
+		glo::win->shaded ^= true;
+		basic3d->set_int("u_unlit", !glo::win->shaded);
+	}
+}
+
+void Game::update_car_spawn() {
+	Input& input = *glo::input;
+	for (int i = 0; i < 6; i++) {
+		Entity* car = nullptr;
+		for (Entity* e : glo::entity->arr) {
+			if (e->has(Component::CAR) && e->car.spot_index == i) {
+				car = e;
+				break;
+			}
+		}
+
+		if (input.press(GLFW_KEY_1 + i)) {
+			if (input.down(GLFW_KEY_LEFT_CONTROL) && car != nullptr) {
+				glo::entity->destroy(car);
+			}
+			else if (input.down(GLFW_KEY_LEFT_SHIFT) && car != nullptr) {
+				car->car.time_left = 20 * 60;
+			}
+			else if (car == nullptr) {
+				car = spawn_car(i);
+			}
+		}
+	}
+
 }

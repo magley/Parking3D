@@ -30,6 +30,10 @@ struct Game {
 	void update_noise();
 	void open_cam();
 	void close_cam();
+
+	void update_mouse_freedom();
+	void update_game_inputs();
+	void update_car_spawn();
 private:
 	std::vector<Entity*> get_camera_entities();
 };

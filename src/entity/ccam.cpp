@@ -4,6 +4,7 @@
 #include "subsystem/subsystem_camera.h"
 #include "subsystem/subsystem_entity.h"
 #include "subsystem/subsystem_input.h"
+#include "subsystem/subsystem_game.h"
 
 void CCam::update(Entity* self) {
 	switch (type) {
@@ -120,6 +121,10 @@ void CCam::_update_stationary(Entity* self) {
 
 	update_pitch_yaw_from_ang(self);
 	update_front_from_pitch_yaw(self);
+
+	if (self->ang.y < -54) {
+		glo::game->open_cam();
+	}
 }
 
 void CCam::_update_free(Entity* self) {
