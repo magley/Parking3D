@@ -132,6 +132,9 @@
     <ClCompile Include="src\subsystem\subsystem_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\rend\rendtarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -272,6 +275,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\subsystem\subsystem_audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rend\rendtarget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

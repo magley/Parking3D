@@ -8,6 +8,7 @@
 
 #include "rend/model.h"
 #include "rend/light.h"
+#include "rend/rendtarget.h"
 #include "rend/mesh2d.h"
 #include "2d/hud.h"
 #include "2d/parking2d.h"
@@ -22,45 +23,6 @@
 #include "subsystem/subsystem_window.h"
 
 #include "util/log.h"
-
-unsigned int fbo, texture;
-
-void init_texture_framebuffer(int width, int height) {
-	glDeleteFramebuffers(1, &fbo);
-	glDeleteTextures(1, &texture);
-
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-
-	unsigned int rbo;
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void on_framebuffer_resize() {
-	int width, height;
-	glfwGetWindowSize(glo::win->win, &width, &height);
-	glViewport(0, 0, width, height);
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	on_framebuffer_resize();
-}
 
 int main(int argc, char** argv) {
 	// Initialize engine subsystems.
@@ -81,7 +43,6 @@ int main(int argc, char** argv) {
 	glfwInit();
 	glo::win->win = glfwCreateWindow(1280, 720, "Parking3D", nullptr, nullptr);
 	glfwMakeContextCurrent(glo::win->win);
-	glfwSetFramebufferSizeCallback(glo::win->win, framebuffer_size_callback);
 	glfwSwapInterval(1);
 	log("Initializing the OpenGL context...");
 	glewInit();
@@ -90,7 +51,9 @@ int main(int argc, char** argv) {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	init_texture_framebuffer(800, 600);
+
+	RendTarget rt_default = RendTarget::init_default_rend_target();
+	RendTarget rt_screen_2d = RendTarget(800, 600);
 
 	// Entities.
 
@@ -106,7 +69,7 @@ int main(int argc, char** argv) {
 	Model* mdl_ramp_base            = glo::res->load_mdl("ramp_base.obj");
 	Shader* basic3d                 = glo::res->load_shd("basic3d");
 	Shader* basic2d                 = glo::res->load_shd("basic2d");
-	Texture* tex_screen_framebuffer = new Texture(texture, 800, 600);
+	Texture* tex_screen_framebuffer = new Texture(rt_screen_2d.texture, 800, 600);
 	Texture* tex_map                = glo::res->load_tex("tex_map.png", 5);
 	Texture* tex_crosshair          = glo::res->load_tex("tex_crosshair.png");
 	Texture* tex_pixel              = glo::res->load_tex("tex_pixel.png");
@@ -257,6 +220,8 @@ int main(int argc, char** argv) {
 
 	while (!glfwWindowShouldClose(glo::win->win)) {
 		glfwPollEvents();
+		int win_w, win_h;
+		glo::win->get_size(&win_w, &win_h);
 		
 		if (glo::game->lock_cursor) {
 			glfwSetInputMode(glo::win->win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -450,16 +415,10 @@ int main(int argc, char** argv) {
 		//---------------------------------------------------
 		// Render 3D scene to the framebuffer.
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_DEPTH_TEST);
-		{
-			int w, h;
-			glfwGetWindowSize(glo::win->win, &w, &h);
-			glViewport(0, 0, w, h);
-		}
-
+		rt_default.resize(win_w, win_h);
+		rt_default.make_current();
+		rt_default.clear(0, 0, 0);
+		rt_default.set_depth_testing(true);
 
 		basic3d->set_int("u_noise_seed", glo::game->noise.rand);
 		basic3d->set_float("u_noise_intensity", glo::game->noise.intensity);
@@ -486,27 +445,21 @@ int main(int argc, char** argv) {
 		//---------------------------------------------------
 		// Render 2D scene to fbo.
 
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
-		glViewport(0, 0, 800, 600);
-		glDisable(GL_DEPTH_TEST); // TODO: Don't do this, but prevent 2D objects from hiding one another.
+		rt_screen_2d.make_current();
+		rt_screen_2d.clear(0, 0, 0);
+		rt_screen_2d.set_depth_testing(false);
 		parking2d.draw(basic2d);
 
 		//---------------------------------------------------
 		// Render HUD, crosshair and watermakr to the framebuffer.
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		int w, h;
-		glfwGetWindowSize(glo::win->win, &w, &h);
-		glViewport(0, 0, w, h);
-		glm::mat4 proj = glm::ortho((float)0, (float)w, (float)h, (float)0, -10.0f, 10.0f);
+		rt_default.make_current();
+		glm::mat4 proj = glm::ortho((float)0, (float)win_w, (float)win_h, (float)0, -10.0f, 10.0f);
 
 		hud.draw(basic2d);
 		if (glo::game->lock_cursor) {
 			basic2d->set_mat4("u_proj", &proj[0][0]);
-			basic2d->set_vec2("u_pos", w / 2.0f, h / 2.0f);
+			basic2d->set_vec2("u_pos", win_w / 2.0f, win_h / 2.0f);
 			basic2d->set_vec2("u_scale", (float)tex_crosshair->w, (float)tex_crosshair->h);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_crosshair);
@@ -514,16 +467,16 @@ int main(int argc, char** argv) {
 
 		{
 			Texture* tex_watermark = glo::res->load_tex("tex_watermark.png");
-			basic2d->set_vec2("u_pos", 0, (float)h - tex_watermark->h);
+			basic2d->set_vec2("u_pos", 0, (float)win_h - tex_watermark->h);
 			basic2d->set_vec2("u_scale", (float)tex_watermark->w, (float)tex_watermark->h);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_watermark);
 		}
 
 		if (hud.help_visible) {
-			int ww = glm::min(w, (int)tex_help->w);
-			int hh = glm::min(h, (int)tex_help->h);
-			basic2d->set_vec2("u_pos", ((float)w - ww) / 2.0f, ((float)h - hh) / 2.0f);
+			int ww = glm::min(win_w, (int)tex_help->w);
+			int hh = glm::min(win_h, (int)tex_help->h);
+			basic2d->set_vec2("u_pos", ((float)win_w - ww) / 2.0f, ((float)win_h - hh) / 2.0f);
 			basic2d->set_vec2("u_scale", (float)ww, (float)hh);
 			basic2d->set_vec3("u_img_frame", 1, 1, 0);
 			mdl_2d.draw(basic2d, tex_help);
