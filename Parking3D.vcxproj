@@ -130,7 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\2d\bbox.cpp" />
     <ClCompile Include="src\2d\parking2d.cpp" />
     <ClCompile Include="src\audio\audiocore.cpp" />
