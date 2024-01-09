@@ -9,7 +9,7 @@ struct Game {
 	int curr_cam_index;
 	int free_cam_index; // Readonly
 	int down_cam_index; // Readonly
-	bool allow_fun_cams = false;
+	bool allow_fun_cams = true;
 	void setup_cam_indices(int free_cam_index, int down_cam_index);
 	void next_cam(bool previous);
 	bool is_cctv_cam(int index);
